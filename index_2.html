@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthRisk Sim — HCMT3006 UDST</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--nv:#002A5C;--cy:#00AEEF;--gd:#C8A951;--wh:#fff;--sf:#F4F6FA;--bd:rgba(0,42,92,.12);--tx:#0A1628;--mu:#6B7A8D;--gr:#1A7A4A;--rd:#C0392B;--am:#D4860A}
+body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);min-height:100vh}
+#loginView{position:fixed;inset:0;background:var(--nv);display:flex;align-items:center;justify-content:center;padding:20px;z-index:999}
+.lcard{background:var(--wh);border-radius:16px;padding:32px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.lcard h1{font-family:'Syne',sans-serif;font-size:22px;color:var(--nv);margin-bottom:4px}
+.lcard .lsub{font-size:12px;color:var(--mu);margin-bottom:22px;line-height:1.55}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--nv);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.fg input,.fg select{width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;color:var(--tx);background:var(--sf)}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--cy);background:var(--wh)}
+.lbtn{width:100%;padding:12px;background:var(--nv);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s}
+.lbtn:hover{opacity:.87}
+.lnote{font-size:11px;color:var(--mu);margin-top:12px;line-height:1.5;text-align:center}
+.role-tabs{display:flex;gap:0;margin-bottom:20px;border:1.5px solid var(--bd);border-radius:9px;overflow:hidden}
+.role-tab{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:var(--mu);background:var(--sf);border:none;font-family:'Inter',sans-serif;transition:background .12s}
+.role-tab.on{background:var(--nv);color:#fff}
+.instr-pw{display:none}
+.err{color:var(--rd);font-size:12px;margin-top:8px;text-align:center;display:none}
+#appView{display:none}
+.hdr{background:var(--nv);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.hdr-title{color:var(--cy);font-family:'Syne',sans-serif;font-size:15px;font-weight:800}
+.hdr-sub{color:rgba(255,255,255,.4);font-size:10px}
+.hdr-badge{font-size:10px;padding:3px 10px;border-radius:100px;background:rgba(0,174,239,.15);color:var(--cy);border:1px solid rgba(0,174,239,.3)}
+.hdr-user{font-size:11px;color:rgba(255,255,255,.5)}
+.instr-hdr-badge{font-size:10px;padding:2px 9px;border-radius:4px;background:#C8A951;color:#002A5C;font-weight:700;margin-left:6px}
+.nav{background:var(--wh);border-bottom:1px solid var(--bd);display:flex;padding:0 16px;overflow-x:auto}
+.ntab{font-size:12px;font-weight:500;padding:11px 14px;color:var(--mu);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:color .15s}
+.ntab:hover{color:var(--nv)}
+.ntab.on{color:var(--nv);border-bottom-color:var(--cy)}
+.page{display:none;padding:18px 20px;max-width:960px;margin:0 auto}
+.page.on{display:block}
+.scenbox{background:var(--nv);border-radius:12px;padding:20px;color:#fff;margin-bottom:14px}
+.scenbox h2{color:var(--cy);font-family:'Syne',sans-serif;font-size:17px;margin-bottom:4px}
+.scenbox .sdt{font-size:10px;color:rgba(255,255,255,.4);font-family:monospace;margin-bottom:10px}
+.scenbox p{font-size:13px;line-height:1.75;color:rgba(255,255,255,.85)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-top:14px}
+.fact{background:rgba(255,255,255,.08);border-radius:8px;padding:10px;text-align:center}
+.fact-n{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--cy)}
+.fact-n.red{color:#F09595}
+.fact-n.am{color:#FAC775}
+.fact-l{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
+.asb{background:#EBF2FB;border:1px solid rgba(0,42,92,.15);border-radius:9px;padding:10px 14px;font-size:12px;color:#0C447C;line-height:1.6;margin-top:12px}
+.qcard{background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:10px}
+.qlabel{font-size:10px;color:var(--cy);font-family:monospace;font-weight:600;margin-bottom:6px}
+.qtext{font-size:13px;font-weight:600;color:var(--nv);line-height:1.5;margin-bottom:10px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border-radius:8px;border:1.5px solid var(--bd);cursor:pointer;font-size:12px;line-height:1.5;color:var(--tx);background:var(--wh);transition:all .12s}
+.opt:hover{background:#EBF2FB;border-color:#B5D4F4}
+.opt.sel{background:#E1F5EE;border-color:#1A7A4A}
+.opt.sel .olet{background:#1A7A4A;color:#fff}
+.olet{width:22px;height:22px;border-radius:5px;background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;font-family:monospace;color:var(--mu)}
+.pts{font-size:10px;padding:2px 7px;border-radius:4px;font-family:monospace;white-space:nowrap;margin-left:auto;font-weight:600}
+.p10{background:#E1F5EE;color:#1A7A4A}
+.p7{background:#EBF2FB;color:#0C447C}
+.p4{background:#FFF3CD;color:#854F0B}
+.p0{background:var(--sf);color:var(--mu)}
+.pm5{background:#FCEBEB;color:#C0392B}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:opacity .12s}
+.btn-p{background:var(--nv);color:#fff}
+.btn-p:hover{opacity:.86}
+.btn-c{background:var(--cy);color:var(--nv)}
+.btn-c:hover{opacity:.86}
+.btn-o{background:var(--wh);color:var(--nv);border:1.5px solid var(--bd)}
+.btn-o:hover{background:var(--sf)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.sub-ok{background:#E1F5EE;border:1.5px solid var(--gr);border-radius:10px;padding:16px;text-align:center;margin-bottom:14px}
+.sub-ok h3{font-family:'Syne',sans-serif;color:var(--gr);font-size:16px}
+.sub-ok p{font-size:12px;color:#085041;margin-top:4px}
+.phase-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--sf);border-radius:8px;margin-bottom:12px;font-size:12px;color:var(--mu)}
+.dot{width:9px;height:9px;border-radius:50%}
+.dot-r{background:#E24B4A}
+.dot-a{background:#EF9F27}
+.dot-g{background:#1D9E75}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:14px}
+.mcard{border:1px solid var(--bd);border-radius:9px;padding:11px;background:var(--wh)}
+.mname{font-size:12px;font-weight:600;color:var(--nv);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.mavatar{width:24px;height:24px;border-radius:50%;background:var(--nv);color:var(--cy);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mars{display:flex;flex-direction:column;gap:3px}
+.mar{display:flex;align-items:center;gap:5px;font-size:11px}
+.marq{font-family:monospace;color:var(--mu);min-width:18px;font-size:10px}
+.marv{font-family:monospace;font-weight:600;padding:1px 6px;border-radius:3px;font-size:10px}
+.vA{background:#EDE7F6;color:#3B1A6B}
+.vB{background:#EBF2FB;color:#0C447C}
+.vC{background:#E1F5EE;color:#085041}
+.vD{background:#FFF3CD;color:#633806}
+.vn{background:var(--sf);color:var(--mu)}
+.dbar{margin-bottom:9px}
+.dbar-top{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.card-h{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.card-h h3{font-size:13px;font-weight:600;color:var(--nv)}
+.card-b{padding:13px 14px}
+.gd-question{margin-bottom:14px;padding:12px;background:var(--sf);border-radius:9px;border:1.5px solid var(--bd)}
+.gd-qtitle{font-size:12px;font-weight:600;color:var(--nv);margin-bottom:8px}
+.gd-opts{display:flex;gap:6px;flex-wrap:wrap}
+.gd-opt label{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:7px 12px;border:1.5px solid var(--bd);border-radius:7px;background:var(--wh);color:var(--tx);font-weight:500;transition:all .12s}
+.gd-opt input[type=radio]:checked + label{background:#E1F5EE;border-color:#1A7A4A;color:#1A7A4A}
+.met{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}
+.metc{background:var(--wh);border:1px solid var(--bd);border-radius:9px;padding:11px 13px}
+.metn{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--nv)}
+.metl{font-size:10px;color:var(--mu);margin-top:1px}
+.metc.mred .metn{color:var(--rd)}
+.metc.mgrn .metn{color:var(--gr)}
+.rr-wrap{overflow-x:auto;border-radius:9px;border:1px solid var(--bd)}
+.rrtbl{width:100%;border-collapse:collapse;font-size:11px;min-width:700px}
+.rrtbl th{background:var(--nv);color:#fff;padding:8px 9px;text-align:left;font-family:monospace;font-size:10px;white-space:nowrap}
+.rrtbl td{padding:7px 9px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.rrtbl tr:hover td{background:#F7F9FC}
+.lext{background:#FCEBEB;color:#C0392B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
+.lhi{background:#FFF3CD;color:#854F0B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
+.lmed{background:#E6F1FB;color:#0C447C;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
+.llow{background:#E1F5EE;color:#1A7A4A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
+.sop{background:#FCEBEB;color:#C0392B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.spr{background:#FFF3CD;color:#854F0B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.sdn{background:#E1F5EE;color:#1A7A4A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.dop{background:#EBF2FB;color:#1A3A6B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.dcl{background:#FCEBEB;color:#8B1A1A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.dfi{background:#FFF8E1;color:#5C3A00;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.dlr{background:#EDE7F6;color:#3B1A6B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.dhc{background:#E0F5ED;color:#084A3A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.rinput{border:1px solid var(--cy);border-radius:5px;padding:3px 6px;font-size:11px;font-family:'Inter',sans-serif;background:#EBF2FB;color:var(--nv)}
+.lbrow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid var(--bd);background:var(--wh);margin-bottom:8px}
+.lbrank{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;min-width:30px;text-align:center}
+.lbrank.r1{color:var(--gd)}
+.lbrank.r2{color:var(--mu)}
+.lbrank.r3{color:#CD7F32}
+.lbname{flex:1;font-size:13px;font-weight:600;color:var(--nv)}
+.lbsub{font-size:10px;color:var(--mu)}
+.lbtot{font-size:18px;font-weight:700;font-family:monospace;color:var(--nv)}
+.lbbar{height:6px;background:var(--sf);border-radius:3px;overflow:hidden;width:90px}
+.lbfill{height:100%;background:var(--cy);border-radius:3px}
+.instr-section{background:rgba(200,169,81,.08);border:1px solid rgba(200,169,81,.3);border-radius:10px;padding:14px;margin-bottom:14px}
+.instr-section h3{font-size:13px;font-weight:600;color:var(--am);margin-bottom:10px}
+.instr-group-card{background:var(--wh);border:1px solid var(--bd);border-radius:9px;padding:12px;margin-bottom:10px}
+.instr-group-title{font-size:13px;font-weight:700;color:var(--nv);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.instr-member-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px}
+.instr-member-row:last-child{border-bottom:none}
+.instr-answers{display:flex;gap:4px}
+.round-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.stitle{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--nv);margin-bottom:12px}
+.tip{background:#EBF2FB;border-radius:8px;padding:9px 12px;font-size:12px;color:#0C447C;line-height:1.6;margin-top:10px}
+.warn-box{background:#FFF3CD;border:1px solid #FAC775;border-radius:8px;padding:9px 12px;font-size:12px;color:#633806;margin-bottom:12px}
+.empty{text-align:center;padding:28px 16px;color:var(--mu);font-size:12px}
+.empty h4{font-size:14px;font-weight:600;color:var(--nv);margin-bottom:4px}
+@media(max-width:600px){.page{padding:12px}.met{grid-template-columns:1fr 1fr}.facts{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div id="loginView">
+  <div class="lcard">
+    <h1>HealthRisk Sim</h1>
+    <p class="lsub">Al-Rayyan Surgical Centre · Case 1: Collapsed Supply Chain<br>HCMT3006 · UDST College of Business · Spring 2026</p>
+    <div class="role-tabs">
+      <button class="role-tab on" id="tabStudent" onclick="setRole('student')">Student</button>
+      <button class="role-tab" id="tabLeader" onclick="setRole('leader')">Group Leader</button>
+      <button class="role-tab" id="tabInstructor" onclick="setRole('instructor')">Instructor</button>
+    </div>
+    <div id="studentFields">
+      <div class="fg"><label>Full Name</label><input type="text" id="inpName" placeholder="e.g. Ahmed Al-Mansouri"></div>
+      <div class="fg"><label>Student ID</label><input type="text" id="inpID" placeholder="e.g. 20220001"></div>
+      <div class="fg"><label>Group</label>
+        <select id="inpGroup">
+          <option value="">— Select your group —</option>
+          <option>Group A</option><option>Group B</option><option>Group C</option>
+          <option>Group D</option><option>Group E</option><option>Group F</option>
+        </select>
+      </div>
+    </div>
+    <div id="instructorFields" class="instr-pw" style="display:none">
+      <div class="fg"><label>Instructor Name</label><input type="text" id="inpInstrName" placeholder="Dr. Fekri Dureab"></div>
+      <div class="fg"><label>Password</label><input type="password" id="inpPW" placeholder="Enter instructor password"></div>
+      <div class="warn-box" style="margin-bottom:0;font-size:11px">Default password: <strong>UDST2026</strong> — change this before using with students.</div>
+    </div>
+    <div id="loginErr" class="err">Incorrect password. Please try again.</div>
+    <button class="lbtn" id="enterBtn" style="margin-top:14px">Enter Simulation</button>
+    <div class="lnote" id="loginNote">No account needed. Your answers save automatically. Use your real name and student ID.</div>
+  </div>
+</div>
+
+<div id="appView">
+  <div class="hdr">
+    <div>
+      <div class="hdr-title">HealthRisk Sim <span id="instrBadge" class="instr-hdr-badge" style="display:none">INSTRUCTOR</span></div>
+      <div class="hdr-sub">HCMT3006 · UDST College of Business</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="hdr-badge" id="hdrRound">Round 1</span>
+      <span class="hdr-user" id="hdrUser"></span>
+    </div>
+  </div>
+  <div class="nav">
+    <div class="ntab on" onclick="showPage('pgSc',this)">Scenario</div>
+    <div class="ntab" onclick="showPage('pgDec',this)" id="navDec">My Decisions</div>
+    <div class="ntab" onclick="showPage('pgGrp',this)" id="navGrp">Group Dashboard</div>
+    <div class="ntab" onclick="showPage('pgRR',this)">Risk Register</div>
+    <div class="ntab" onclick="showPage('pgLB',this)">Leaderboard</div>
+    <div class="ntab" onclick="showPage('pgInstr',this)" id="navInstr" style="display:none;color:var(--gd)">Instructor Panel</div>
+  </div>
+
+  <div id="pgSc" class="page on">
+    <div class="scenbox">
+      <h2>Round 1 — Risk Identification</h2>
+      <div class="sdt">January 15, 2026 · Al-Rayyan Surgical Centre, Doha, Qatar · ASHRM ERM — Operational Domain</div>
+      <p>Al-Rayyan Surgical Centre is a 150-bed private hospital in Doha performing 4,500 surgeries per year. At 09:00 AM on January 15, 2026, the Risk Management Committee receives an urgent call. Their sole sterile supply vendor in Southeast Asia reports their factory was destroyed by flooding. No deliveries for 6–8 weeks.</p>
+      <p style="margin-top:10px">The supply chain manager is on annual leave. His deputy has NO authority to activate emergency protocols. A stock audit reveals only 4 days of sterile supplies remain. 23 elective surgeries are scheduled next week. Mr. Al-Rashidi (age 58) awaits urgent cancer surgery on January 20.</p>
+      <div class="facts">
+        <div class="fact"><div class="fact-n red">4 days</div><div class="fact-l">Sterile supply left</div></div>
+        <div class="fact"><div class="fact-n red">0</div><div class="fact-l">Backup suppliers</div></div>
+        <div class="fact"><div class="fact-n am">23</div><div class="fact-l">Surgeries next week</div></div>
+        <div class="fact"><div class="fact-n">6–8 wks</div><div class="fact-l">Supplier blackout</div></div>
+      </div>
+    </div>
+    <div class="asb"><strong>ASHRM Resource:</strong> ERM Framework (2020) — Operational Domain. Key issues: single supplier dependency, no BCP, missing Risk Register entry.</div>
+    <div style="margin-top:16px"><button class="btn btn-c" onclick="showPage('pgDec',document.getElementById('navDec'))">Start my Round 1 decisions →</button></div>
+  </div>
+
+  <div id="pgDec" class="page"><div id="decContent"></div></div>
+
+  <div id="pgGrp" class="page">
+    <div class="phase-bar"><div class="dot dot-r" id="phaseDot"></div><span id="phaseText">Waiting for members to submit...</span></div>
+    <div class="stitle">Group members — individual answers</div>
+    <div class="mgrid" id="memberGrid"></div>
+    <div class="card">
+      <div class="card-h">
+        <h3>Answer distribution — Question <span id="dqNum">1</span></h3>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-o" onclick="prevQ()" style="padding:4px 9px;font-size:11px">‹</button>
+          <button class="btn btn-o" onclick="nextQ()" style="padding:4px 9px;font-size:11px">›</button>
+        </div>
+      </div>
+      <div class="card-b" id="distContent"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Group decision submission</h3><span id="gdLeaderBadge" style="font-size:10px;background:#FFF3CD;color:#854F0B;padding:2px 8px;border-radius:4px;font-family:monospace">Leader / Instructor only</span></div>
+      <div class="card-b" id="gdContent"></div>
+    </div>
+  </div>
+
+  <div id="pgRR" class="page">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div class="stitle" style="margin:0">Risk Register — <span id="rrGroupName"></span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-o" onclick="addRRRow()" style="font-size:12px;padding:7px 12px">+ Add risk</button>
+        <button class="btn btn-c" onclick="saveRR()" style="font-size:12px;padding:7px 12px" id="saveRRBtn">Save register</button>
+      </div>
+    </div>
+    <div class="warn-box">Identify the risks from this case. The yellow example row guides you. All students in your group see and edit the same register in real-time.</div>
+    <div class="met" id="rrMetrics"></div>
+    <div class="rr-wrap">
+      <table class="rrtbl">
+        <thead><tr>
+          <th>ID</th><th>ASHRM Domain</th><th>Risk Name</th>
+          <th>L</th><th>C</th><th>RPN</th><th>Level</th>
+          <th>Mitigation</th>
+          <th>Res.L</th><th>Res.C</th><th>Res.RPN</th>
+          <th>Status</th><th>Owner</th><th>Action</th>
+        </tr></thead>
+        <tbody id="rrBody"></tbody>
+      </table>
+    </div>
+    <div class="asb" style="margin-top:12px">
+      <strong>ASHRM Domains:</strong> Operational · Clinical · Financial · Legal/Regulatory · Human Capital<br>
+      <strong>L (1-5):</strong> 1=Rare, 2=Unlikely, 3=Possible, 4=Likely, 5=Almost Certain | <strong>C (1-5):</strong> 1=Negligible, 2=Minor, 3=Moderate, 4=Major, 5=Catastrophic
+    </div>
+  </div>
+
+  <div id="pgLB" class="page">
+    <div class="stitle">Leaderboard — Round <span id="lbRoundNum">1</span></div>
+    <div class="met" id="lbMetrics"></div>
+    <div id="lbList"></div>
+    <div class="tip"><strong>Scoring:</strong> +10 best · +7 good · +4 acceptable · 0 wrong · -5 harmful · Risk Register bonus up to +10 pts</div>
+  </div>
+
+  <div id="pgInstr" class="page">
+    <div class="warn-box"><strong>Instructor view only.</strong> Students cannot see this tab.</div>
+    <div class="instr-section">
+      <h3>Round Control</h3>
+      <div style="margin-bottom:8px;font-size:13px">Current round: <strong id="instrRoundDisplay">1</strong></div>
+      <div class="round-btns">
+        <button class="btn btn-p" onclick="openRound(1)" style="font-size:12px">Round 1</button>
+        <button class="btn btn-o" onclick="openRound(2)" style="font-size:12px">Round 2</button>
+        <button class="btn btn-o" onclick="openRound(3)" style="font-size:12px">Round 3</button>
+        <button class="btn btn-o" onclick="openRound(4)" style="font-size:12px">Round 4</button>
+        <button class="btn btn-o" onclick="openRound(5)" style="font-size:12px">Round 5</button>
+      </div>
+    </div>
+    <div class="instr-section">
+      <h3>Group Status — Round <span id="instrRoundStat">1</span></h3>
+      <div id="instrGroupData"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var INSTRUCTOR_PASSWORD='UDST2026';
+var user={name:'',id:'',group:'',role:'student'};
+var currentRound=1,myAnswers={},submitted=false,rrRows=[],viewingQ=1,editingIdx=null;
+var ROUNDS={1:{title:"Round 1 — Risk Identification",questions:[
+{q:"Who do you notify FIRST?",opts:{A:"CEO and Hospital Director",B:"Theatre Manager",C:"Finance",D:"Wait for manager"},pts:{A:10,B:7,C:4,D:0},ans:'A'},
+{q:"What do you add to Risk Register?",opts:{A:"Single Supplier + Supply Chain",B:"Flooding only",C:"All risks",D:"Nothing"},pts:{A:10,B:4,C:7,D:0},ans:'A'},
+{q:"Which ASHRM domain?",opts:{A:"Operational",B:"Hazard",C:"Financial",D:"Strategic"},pts:{A:10,B:7,C:4,D:4},ans:'A'},
+{q:"Risk identification tool?",opts:{A:"Register + SWOT",B:"RCA",C:"FMEA",D:"Risk Matrix"},pts:{A:10,B:4,C:7,D:4},ans:'A'},
+{q:"Stock level action?",opts:{A:"Immediate physical audit",B:"Estimate",C:"Trust supplier",D:"Wait"},pts:{A:10,B:4,C:4,D:-5},ans:'A'}
+]}};
+var DEFAULT_RR=[{id:'OR-1',domain:'Operational',name:'Single Supplier Dependency',L:5,C:5,mit:'Multi-supplier',RL:2,RC:3,status:'In Progress',owner:'CPO'}];
+function saveLS(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function loadLS(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function setRole(r){var tabs=document.querySelectorAll('.role-tab');tabs.forEach(t=>t.classList.remove('on'));event.target.classList.add('on');var sf=document.getElementById('studentFields'),inf=document.getElementById('instructorFields'),ln=document.getElementById('loginNote');if(r==='student'){sf.style.display='block';inf.style.display='none';ln.textContent='No account needed. Your answers save automatically.';}else{sf.style.display='none';inf.style.display='block';ln.textContent='Enter your name and the instructor password to access the control panel.';}}
+document.getElementById('enterBtn').addEventListener('click',function(){var name=document.getElementById('inpName').value.trim(),id=document.getElementById('inpID').value.trim(),group=document.getElementById('inpGroup').value,role=document.querySelector('.role-tab.on').id==='tabStudent'?'student':document.querySelector('.role-tab.on').id==='tabLeader'?'leader':'instructor';if(role==='instructor'){var pwd=document.getElementById('inpPW').value;if(pwd!==INSTRUCTOR_PASSWORD){document.getElementById('loginErr').style.display='block';return;}name=document.getElementById('inpInstrName').value.trim();}if(!name){alert('Please enter name.');return;}if(role!=='instructor'&&(!id||!group)){alert('Please fill all fields.');return;}user={name:name,id:id,group:group,role:role};saveLS('user_'+id,user);currentRound=loadLS('current_round',1);submitted=loadLS('submitted_'+id+'_r'+currentRound,false);myAnswers=loadLS('answers_'+id+'_r'+currentRound,{});rrRows=loadLS('rr_'+group,JSON.parse(JSON.stringify(DEFAULT_RR)));document.getElementById('loginView').style.display='none';document.getElementById('appView').style.display='block';document.getElementById('hdrUser').textContent=name+(group?' · '+group:'');document.getElementById('hdrRound').textContent='Round '+currentRound;if(role==='instructor'){document.getElementById('instrBadge').style.display='inline-block';document.getElementById('navInstr').style.display='block';}document.getElementById('rrGroupName').textContent=group||'Instructor';renderDecisions();renderGroup();renderRR();renderLB();setInterval(()=>{renderGroup();renderLB();},4000);});
+function showPage(id,tab){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));document.getElementById(id).classList.add('on');if(tab)tab.classList.add('on');}
+function renderDecisions(){var rnd=ROUNDS[currentRound];if(!rnd){document.getElementById('decContent').innerHTML='<div class="empty"><h4>No active round</h4></div>';return;}if(submitted){var html='<div class="sub-ok"><h3>Your decisions are submitted!</h3><p>Go to Group Dashboard to see your group\'s answers.</p></div>';rnd.questions.forEach((q,i)=>{var qn='q'+(i+1),ans=myAnswers[qn]||'?',pts=(q.pts[ans]||0);html+='<div class="qcard" style="opacity:.8"><div class="qlabel">Q'+(i+1)+': <strong>'+ans+'</strong> <span class="pts '+(pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5')+'">'+(pts>0?'+':'')+pts+'</span></div></div>';});document.getElementById('decContent').innerHTML=html;return;}var html='<div class="stitle">'+rnd.title+'</div>';rnd.questions.forEach((q,i)=>{var qn='q'+(i+1),sel=myAnswers[qn]||'';html+='<div class="qcard"><div class="qlabel">DECISION '+(i+1)+' of 5</div><div class="qtext">'+q.q+'</div><div class="opts">';['A','B','C','D'].forEach(letter=>{var pts=q.pts[letter],ptsCls=pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5',isSel=sel===letter;html+='<div class="opt'+(isSel?' sel':'')+'" onclick="selectAnswer(\''+qn+'\',\''+letter+'\')"><div class="olet">'+letter+'</div><div style="flex:1">'+q.opts[letter]+'</div><span class="pts '+ptsCls+'">'+(pts>0?'+':'')+pts+'</span></div>';});html+='</div></div>';});var allAnswered=rnd.questions.every((_,i)=>myAnswers['q'+(i+1)]);html+='<div style="margin-top:14px"><button class="btn btn-p" onclick="submitDecisions()" '+(allAnswered?'':'disabled')+'>Submit my decisions</button></div>';document.getElementById('decContent').innerHTML=html;}
+function selectAnswer(qn,letter){if(submitted)return;myAnswers[qn]=letter;saveLS('answers_'+user.id+'_r'+currentRound,myAnswers);renderDecisions();}
+function submitDecisions(){var rnd=ROUNDS[currentRound],ok=rnd.questions.every((_,i)=>myAnswers['q'+(i+1)]);if(!ok){alert('Answer all 5 first.');return;}var subs=loadLS('subs_'+user.group+'_r'+currentRound,[]),ex=-1;subs.forEach((s,i)=>{if(s.id===user.id)ex=i;});var entry={id:user.id,name:user.name,group:user.group,answers:JSON.parse(JSON.stringify(myAnswers))};if(ex>=0)subs[ex]=entry;else subs.push(entry);saveLS('subs_'+user.group+'_r'+currentRound,subs);submitted=true;saveLS('submitted_'+user.id+'_r'+currentRound,true);renderDecisions();renderGroup();renderLB();}
+function renderGroup(){var subs=loadLS('subs_'+user.group+'_r'+currentRound,[]),gd=loadLS('gd_'+user.group+'_r'+currentRound,null),rnd=ROUNDS[currentRound];var pD=document.getElementById('phaseDot'),pT=document.getElementById('phaseText');if(gd){pD.className='dot dot-g';pT.textContent='Group decision submitted!';}else if(subs.length>0){pD.className='dot dot-a';pT.textContent=subs.length+' submitted — discuss then submit group decision';}else{pD.className='dot dot-r';pT.textContent='Waiting for members...';}var mgH='';if(subs.length===0){mgH='<div class="empty"><h4>No submissions yet</h4></div>';}else{subs.forEach(s=>{var ini=s.name.split(' ').map(w=>w[0]||'').join('').substring(0,2).toUpperCase();mgH+='<div class="mcard"><div class="mname"><div class="mavatar">'+ini+'</div>'+s.name+'</div><div class="mars">';for(var i=1;i<=5;i++){var a=s.answers['q'+i]||'';mgH+='<div class="mar"><span class="marq">Q'+i+'</span><span class="marv '+(a?'v'+a:'vn')+'">'+(a||'—')+'</span></div>';}mgH+='</div></div>';});}document.getElementById('memberGrid').innerHTML=mgH;document.getElementById('dqNum').textContent=viewingQ;if(rnd&&subs.length>0){var q=rnd.questions[viewingQ-1],counts={A:0,B:0,C:0,D:0};subs.forEach(s=>{var a=s.answers['q'+viewingQ];if(a)counts[a]++;});var tot=subs.length,dH='';['A','B','C','D'].forEach(letter=>{var pct=tot?(counts[letter]/tot*100|0):0,pts=q.pts[letter],ptsCls=pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5',barC=pts===10?'#1D9E75':pts===7?'#378ADD':pts>=4?'#EF9F27':'#E24B4A';dH+='<div class="dbar"><div class="dbar-top"><span><strong>'+letter+'</strong> '+counts[letter]+' ('+pct+'%)</span><span class="pts '+ptsCls+'">'+(pts>0?'+':'')+pts+'</span></div><div style="height:8px;background:var(--sf);border-radius:4px"><div style="height:100%;width:'+pct+'%;background:'+barC+'"></div></div></div>';});document.getElementById('distContent').innerHTML=dH;}var gdH='';if(gd){gdH='<div class="sub-ok"><h3>Submitted!</h3></div>';}else if(user.role==='leader'||user.role==='instructor'){gdH='<p style="font-size:12px;margin-bottom:12px">Select your group\'s final answer for each question after discussion.</p>';if(rnd){rnd.questions.forEach((q,i)=>{gdH+='<div class="gd-question"><div class="gd-qtitle">Decision '+(i+1)+': '+q.q+'</div><div class="gd-opts">';['A','B','C','D'].forEach(letter=>{var pts=q.pts[letter],ptsCls=pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5';gdH+='<div class="gd-opt"><input type="radio" id="gdq'+(i+1)+'_'+letter+'" name="gdq'+(i+1)+'" value="'+letter+'"><label for="gdq'+(i+1)+'_'+letter+'"><strong>'+letter+'</strong> <span class="pts '+ptsCls+'">'+(pts>0?'+':'')+pts+'</span></label></div>';});gdH+='</div></div>';});gdH+='<button class="btn btn-c" onclick="submitGD()" style="margin-top:12px">Submit group decision</button>';}}else{gdH='<div class="empty"><p>Only the Group Leader can submit the group decision.</p></div>';}document.getElementById('gdContent').innerHTML=gdH;}
+function prevQ(){if(viewingQ>1){viewingQ--;renderGroup();}}
+function nextQ(){if(viewingQ<5){viewingQ++;renderGroup();}}
+function submitGD(){var rnd=ROUNDS[currentRound],ans={},ok=true;for(var i=1;i<=5;i++){var sel=document.querySelector('input[name="gdq'+i+'"]:checked');if(!sel){ok=false;break;}ans['q'+i]=sel.value;}if(!ok){alert('Select all 5 answers.');return;}var sc=rnd.questions.reduce((sum,q,i)=>sum+(q.pts[ans['q'+(i+1)]]||0),0),gd={group:user.group,round:currentRound,answers:ans,score:sc};saveLS('gd_'+user.group+'_r'+currentRound,gd);renderGroup();renderLB();}
+function renderRR(){var ext=rrRows.filter(r=>r.L*r.C>=15).length,mit=rrRows.filter(r=>r.RL*r.RC<r.L*r.C).length;document.getElementById('rrMetrics').innerHTML='<div class="metc"><div class="metn">'+rrRows.length+'</div><div class="metl">Total</div></div><div class="metc mred"><div class="metn">'+ext+'</div><div class="metl">Extreme</div></div><div class="metc mgrn"><div class="metn">'+mit+'</div><div class="metl">Reduced</div></div>';var DOMS=['Operational','Clinical','Financial','Legal/Regulatory','Human Capital'];var tbH='';rrRows.forEach((r,i)=>{var rpn=r.L*r.C,res=r.RL*r.RC,lvC=rpn>=15?'lext':rpn>=10?'lhi':rpn>=5?'lmed':'llow',lvL=rpn>=15?'EXT':rpn>=10?'HI':rpn>=5?'MED':'LOW';if(editingIdx===i){tbH+='<tr style="background:#EBF2FB"><td><input class="rinput" value="'+r.id+'" style="width:44px"></td><td><select class="rinput">'+DOMS.map(d=>'<option'+(d===r.domain?' selected':'')+'>'+d+'</option>').join('')+'</select></td><td><input class="rinput" value="'+r.name+'" style="min-width:90px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.L+'" style="width:32px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.C+'" style="width:32px"></td><td style="font-weight:600">'+rpn+'</td><td><span class="'+lvC+'">'+lvL+'</span></td><td><input class="rinput" value="'+r.mit+'" style="min-width:100px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.RL+'" style="width:32px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.RC+'" style="width:32px"></td><td><span class="'+lvC+'">'+getLvl(res)+'</span></td><td><input class="rinput" value="'+r.status+'" style="min-width:80px"></td><td><input class="rinput" value="'+r.owner+'" style="min-width:70px"></td><td><button class="btn btn-c" onclick="editingIdx=null;renderRR()" style="font-size:10px;padding:4px 8px">Save</button></td></tr>';}else{tbH+='<tr><td style="font-family:monospace;font-size:10px;font-weight:600">'+r.id+'</td><td style="font-size:10px">'+r.domain+'</td><td style="font-weight:600;font-size:11px">'+r.name+'</td><td style="text-align:center">'+r.L+'</td><td style="text-align:center">'+r.C+'</td><td style="text-align:center;font-weight:600">'+rpn+'</td><td><span class="'+lvC+'">'+lvL+'</span></td><td style="font-size:10px">'+r.mit+'</td><td style="text-align:center">'+r.RL+'</td><td style="text-align:center">'+r.RC+'</td><td><span class="'+lvC+'">'+getLvl(res)+'</span></td><td style="font-size:10px">'+r.status+'</td><td style="font-size:10px">'+r.owner+'</td><td><button class="btn btn-o" onclick="editingIdx='+i+';renderRR()" style="font-size:10px;padding:4px 8px">Edit</button></td></tr>';}});document.getElementById('rrBody').innerHTML=tbH;}
+function getLvl(rpn){return rpn>=15?'EXT':rpn>=10?'HI':rpn>=5?'MED':'LOW';}
+function addRRRow(){rrRows.push({id:'R-'+(rrRows.length+1),domain:'Operational',name:'New risk',L:3,C:3,mit:'Action',RL:2,RC:2,status:'Open',owner:''});editingIdx=rrRows.length-1;renderRR();}
+function saveRR(){saveLS('rr_'+user.group,rrRows);var btn=document.getElementById('saveRRBtn');btn.textContent='Saved! ✓';setTimeout(()=>{btn.textContent='Save register';},2000);}
+function renderLB(){var allGD=loadLS('allGD',[]),GROUPS=['Group A','Group B','Group C','Group D','Group E','Group F'],scores={};GROUPS.forEach(g=>{scores[g]={dec:0,rr:0,tot:0};});allGD.forEach(gd=>{if(gd.round===currentRound&&scores[gd.group])scores[gd.group].dec=gd.score||0;});Object.values(rrRows).forEach(r=>{if(scores[user.group])scores[user.group].rr=Math.min(10,rrRows.filter(r=>r.mit&&r.mit.length>5).length*2);});Object.values(scores).forEach(s=>{s.tot=s.dec+s.rr;});var sorted=Object.entries(scores).filter(e=>e[1].dec>0).sort((a,b)=>b[1].tot-a[1].tot),maxS=sorted.length>0?sorted[0][1].tot:50;document.getElementById('lbMetrics').innerHTML='<div class="metc"><div class="metn">'+sorted.length+'</div><div class="metl">Groups</div></div><div class="metc"><div class="metn">'+currentRound+'</div><div class="metl">Round</div></div><div class="metc mgrn"><div class="metn">'+(sorted.length?sorted[0][1].tot:0)+'</div><div class="metl">Top</div></div>';var lbH='';if(sorted.length===0)lbH='<div class="empty"><h4>No submissions yet</h4></div>';else sorted.forEach((e,i)=>{var name=e[0],s=e[1],rCls=i===0?'r1':i===1?'r2':i===2?'r3':'',pct=maxS?(s.tot/maxS*100|0):0;lbH+='<div class="lbrow"><div class="lbrank '+rCls+'">'+(i+1)+'</div><div style="flex:1"><div class="lbname">'+name+'</div><div class="lbsub">Decisions: '+s.dec+' · Register: +'+s.rr+'</div></div><div style="display:flex;align-items:center;gap:10px"><div class="lbbar"><div class="lbfill" style="width:'+pct+'%"></div></div><div class="lbtot">'+s.tot+'</div></div></div>';});document.getElementById('lbList').innerHTML=lbH;}
+function openRound(n){currentRound=n;saveLS('current_round',n);document.getElementById('hdrRound').textContent='Round '+n;document.getElementById('instrRoundDisplay').textContent=n;document.getElementById('instrRoundStat').textContent=n;submitted=false;myAnswers={};renderDecisions();renderGroup();}
+</script>
+</body>
+</html>
