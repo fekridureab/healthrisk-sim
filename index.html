@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthRisk Sim — HCMT3006 UDST</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--nv:#002A5C;--cy:#00AEEF;--gd:#C8A951;--wh:#fff;--sf:#F4F6FA;--bd:rgba(0,42,92,.12);--tx:#0A1628;--mu:#6B7A8D;--gr:#1A7A4A;--rd:#C0392B;--am:#D4860A}
+body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);min-height:100vh}
+
+/* LOGIN */
+#loginView{position:fixed;inset:0;background:var(--nv);display:flex;align-items:center;justify-content:center;padding:20px;z-index:999}
+.lcard{background:var(--wh);border-radius:16px;padding:32px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.lcard h1{font-family:'Syne',sans-serif;font-size:22px;color:var(--nv);margin-bottom:4px}
+.lcard p{font-size:12px;color:var(--mu);margin-bottom:22px;line-height:1.55}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--nv);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.fg input,.fg select{width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;color:var(--tx);background:var(--sf);transition:border-color .2s}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--cy);background:var(--wh)}
+.lbtn{width:100%;padding:12px;background:var(--nv);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;font-family:'Inter',sans-serif;transition:opacity .15s}
+.lbtn:hover{opacity:.87}
+.lnote{font-size:11px;color:var(--mu);margin-top:12px;line-height:1.5;text-align:center}
+
+/* MAIN APP */
+#appView{display:none}
+.hdr{background:var(--nv);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.hdr-title{color:var(--cy);font-family:'Syne',sans-serif;font-size:15px;font-weight:800}
+.hdr-sub{color:rgba(255,255,255,.45);font-size:11px}
+.hdr-badge{font-size:10px;padding:3px 10px;border-radius:100px;background:rgba(0,174,239,.15);color:var(--cy);border:1px solid rgba(0,174,239,.3)}
+.hdr-user{font-size:11px;color:rgba(255,255,255,.5)}
+.nav{background:var(--wh);border-bottom:1px solid var(--bd);display:flex;padding:0 16px;overflow-x:auto;gap:0}
+.ntab{font-size:12px;font-weight:500;padding:11px 14px;color:var(--mu);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:color .15s}
+.ntab:hover{color:var(--nv)}
+.ntab.on{color:var(--nv);border-bottom-color:var(--cy)}
+.page{display:none;padding:18px 20px;max-width:900px;margin:0 auto}
+.page.on{display:block}
+
+/* SCENARIO */
+.scenbox{background:var(--nv);border-radius:12px;padding:20px;color:#fff;margin-bottom:14px}
+.scenbox h2{color:var(--cy);font-family:'Syne',sans-serif;font-size:17px;margin-bottom:4px}
+.scenbox .dt{font-size:10px;color:rgba(255,255,255,.4);font-family:monospace;margin-bottom:10px}
+.scenbox p{font-size:13px;line-height:1.75;color:rgba(255,255,255,.85)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-top:14px}
+.fact{background:rgba(255,255,255,.08);border-radius:8px;padding:10px;text-align:center}
+.fact-n{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--cy)}
+.fact-n.red{color:#F09595}
+.fact-n.am{color:#FAC775}
+.fact-l{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
+.asb{background:#EBF2FB;border:1px solid rgba(0,42,92,.15);border-radius:9px;padding:10px 14px;font-size:12px;color:#0C447C;line-height:1.6;margin-top:12px}
+
+/* DECISIONS */
+.qcard{background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:10px}
+.qlabel{font-size:10px;color:var(--cy);font-family:monospace;font-weight:600;margin-bottom:6px}
+.qtext{font-size:13px;font-weight:600;color:var(--nv);line-height:1.5;margin-bottom:10px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border-radius:8px;border:1.5px solid var(--bd);cursor:pointer;font-size:12px;line-height:1.5;color:var(--tx);transition:all .12s;background:var(--wh)}
+.opt:hover{background:#EBF2FB;border-color:#B5D4F4}
+.opt.sel{background:#E1F5EE;border-color:#1A7A4A}
+.opt.sel .olet{background:#1A7A4A;color:#fff}
+.olet{width:22px;height:22px;border-radius:5px;background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;font-family:monospace;color:var(--mu)}
+.pts{font-size:10px;padding:2px 7px;border-radius:4px;font-family:monospace;white-space:nowrap;margin-left:auto;font-weight:600}
+.p10{background:#E1F5EE;color:#1A7A4A}
+.p7{background:#EBF2FB;color:#0C447C}
+.p4{background:#FFF3CD;color:#854F0B}
+.p0{background:var(--sf);color:var(--mu)}
+.pm5{background:#FCEBEB;color:#C0392B}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:opacity .12s;font-family:'Inter',sans-serif}
+.btn-p{background:var(--nv);color:#fff}
+.btn-p:hover{opacity:.86}
+.btn-c{background:var(--cy);color:var(--nv)}
+.btn-c:hover{opacity:.86}
+.btn-o{background:var(--wh);color:var(--nv);border:1.5px solid var(--bd)}
+.btn-o:hover{background:var(--sf)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.submitted-ok{background:#E1F5EE;border:1.5px solid var(--gr);border-radius:10px;padding:18px;text-align:center;margin-bottom:14px}
+.submitted-ok h3{font-family:'Syne',sans-serif;color:var(--gr);font-size:16px}
+.submitted-ok p{font-size:12px;color:#085041;margin-top:4px}
+
+/* GROUP */
+.phase-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--sf);border-radius:8px;margin-bottom:12px;font-size:12px;color:var(--mu)}
+.dot{width:9px;height:9px;border-radius:50%}
+.dot-r{background:#E24B4A}
+.dot-a{background:#EF9F27}
+.dot-g{background:#1D9E75}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:14px}
+.mcard{border:1px solid var(--bd);border-radius:9px;padding:11px;background:var(--wh)}
+.mname{font-size:12px;font-weight:600;color:var(--nv);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.mavatar{width:24px;height:24px;border-radius:50%;background:var(--nv);color:var(--cy);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mars{display:flex;flex-direction:column;gap:3px}
+.mar{display:flex;align-items:center;gap:5px;font-size:11px}
+.marq{font-family:monospace;color:var(--mu);min-width:18px;font-size:10px}
+.marv{font-family:monospace;font-weight:600;padding:1px 6px;border-radius:3px;font-size:10px}
+.vA{background:#EDE7F6;color:#3B1A6B}
+.vB{background:#EBF2FB;color:#0C447C}
+.vC{background:#E1F5EE;color:#085041}
+.vD{background:#FFF3CD;color:#633806}
+.vn{background:var(--sf);color:var(--mu)}
+.dbar{margin-bottom:9px}
+.dbar-top{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.card-h{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.card-h h3{font-size:13px;font-weight:600;color:var(--nv)}
+.card-b{padding:13px 14px}
+
+/* RISK REGISTER */
+.met{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}
+.metc{background:var(--wh);border:1px solid var(--bd);border-radius:9px;padding:11px 13px}
+.metn{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--nv)}
+.metl{font-size:10px;color:var(--mu);margin-top:1px}
+.metc.mred .metn{color:var(--rd)}
+.metc.mgrn .metn{color:var(--gr)}
+.rr-wrap{overflow-x:auto;border-radius:9px;border:1px solid var(--bd)}
+.rrtbl{width:100%;border-collapse:collapse;font-size:11px;min-width:680px}
+.rrtbl th{background:var(--nv);color:#fff;padding:8px 9px;text-align:left;font-family:monospace;font-size:10px;white-space:nowrap}
+.rrtbl td{padding:7px 9px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.rrtbl tr:hover td{background:#F7F9FC}
+.lext{background:#FCEBEB;color:#C0392B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
+.lhi{background:#FFF3CD;color:#854F0B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
+.lmed{background:#E6F1FB;color:#0C447C;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
+.llow{background:#E1F5EE;color:#1A7A4A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
+.sop{background:#FCEBEB;color:#C0392B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.spr{background:#FFF3CD;color:#854F0B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.sdn{background:#E1F5EE;color:#1A7A4A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.dop{background:#EBF2FB;color:#1A3A6B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.dcl{background:#FCEBEB;color:#8B1A1A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.dfi{background:#FFF8E1;color:#5C3A00;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.dlr{background:#EDE7F6;color:#3B1A6B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.dhc{background:#E0F5ED;color:#084A3A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
+.rinput{border:1px solid var(--cy);border-radius:5px;padding:3px 6px;font-size:11px;font-family:'Inter',sans-serif;background:#EBF2FB;color:var(--nv)}
+
+/* LEADERBOARD */
+.lbrow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid var(--bd);background:var(--wh);margin-bottom:8px}
+.lbrank{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;min-width:30px;text-align:center}
+.lbrank.r1{color:var(--gd)}
+.lbrank.r2{color:var(--mu)}
+.lbrank.r3{color:#CD7F32}
+.lbname{flex:1;font-size:13px;font-weight:600;color:var(--nv)}
+.lbsub{font-size:10px;color:var(--mu)}
+.lbtot{font-size:18px;font-weight:700;font-family:monospace;color:var(--nv)}
+.lbbar{height:6px;background:var(--sf);border-radius:3px;overflow:hidden;width:90px}
+.lbfill{height:100%;background:var(--cy);border-radius:3px;transition:width .5s}
+
+/* MISC */
+.stitle{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--nv);margin-bottom:12px}
+.ashrm{background:#EBF2FB;border:1px solid rgba(0,42,92,.12);border-radius:8px;padding:10px 13px;font-size:12px;color:#0C447C;line-height:1.6;margin-top:10px}
+.empty{text-align:center;padding:30px 16px;color:var(--mu);font-size:12px}
+.empty h4{font-size:14px;font-weight:600;color:var(--nv);margin-bottom:4px}
+.tip{background:#EBF2FB;border-radius:8px;padding:9px 12px;font-size:12px;color:#0C447C;line-height:1.6;margin-top:10px}
+@media(max-width:600px){.page{padding:12px}.met{grid-template-columns:1fr 1fr}.facts{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginView">
+  <div class="lcard">
+    <h1>HealthRisk Sim</h1>
+    <p>Al-Rayyan Surgical Centre · Case 1: Collapsed Supply Chain<br>HCMT3006 · UDST College of Business · Spring 2026</p>
+    <div class="fg">
+      <label>Full Name</label>
+      <input type="text" id="inpName" placeholder="e.g. Ahmed Al-Mansouri" autocomplete="off">
+    </div>
+    <div class="fg">
+      <label>Student ID</label>
+      <input type="text" id="inpID" placeholder="e.g. 20220001" autocomplete="off">
+    </div>
+    <div class="fg">
+      <label>Group</label>
+      <select id="inpGroup">
+        <option value="">— Select your group —</option>
+        <option value="Group A">Group A</option>
+        <option value="Group B">Group B</option>
+        <option value="Group C">Group C</option>
+        <option value="Group D">Group D</option>
+        <option value="Group E">Group E</option>
+        <option value="Group F">Group F</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label>Role</label>
+      <select id="inpRole">
+        <option value="student">Student</option>
+        <option value="leader">Group Leader (submits group decision)</option>
+        <option value="instructor">Instructor</option>
+      </select>
+    </div>
+    <button class="lbtn" id="enterBtn">Enter Simulation</button>
+    <div class="lnote">No account needed. Your answers save automatically in your browser.<br>Use your real name and student ID so your instructor can track your work.</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appView">
+  <div class="hdr">
+    <div>
+      <div class="hdr-title">HealthRisk Sim</div>
+      <div class="hdr-sub">HCMT3006 · UDST College of Business</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="hdr-badge" id="hdrRound">Round 1</span>
+      <span class="hdr-user" id="hdrUser"></span>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="ntab on" onclick="showPage('pgSc',this)">Scenario</div>
+    <div class="ntab" onclick="showPage('pgDec',this)">My Decisions</div>
+    <div class="ntab" onclick="showPage('pgGrp',this)">Group Dashboard</div>
+    <div class="ntab" onclick="showPage('pgRR',this)">Risk Register</div>
+    <div class="ntab" onclick="showPage('pgLB',this)">Leaderboard</div>
+  </div>
+
+  <!-- SCENARIO PAGE -->
+  <div id="pgSc" class="page on">
+    <div class="scenbox">
+      <h2>Round 1 — Risk Identification</h2>
+      <div class="dt">January 15, 2026 · Al-Rayyan Surgical Centre, Doha, Qatar · ASHRM ERM — Operational Domain</div>
+      <p>Al-Rayyan Surgical Centre is a 150-bed private hospital in Doha performing 4,500 surgeries per year. At 09:00 AM on January 15, 2026, the Risk Management Committee receives an urgent call. Their sole sterile supply vendor in Southeast Asia reports that their factory has been destroyed by flooding. No deliveries are possible for 6 to 8 weeks.</p>
+      <p style="margin-top:10px">The supply chain manager is on annual leave. His deputy has NO authority to activate emergency protocols. A stock audit reveals only 4 days of sterile supplies remain. 23 elective surgeries are scheduled for next week.</p>
+      <div class="facts">
+        <div class="fact"><div class="fact-n red">4 days</div><div class="fact-l">Sterile supply left</div></div>
+        <div class="fact"><div class="fact-n red">0</div><div class="fact-l">Backup suppliers</div></div>
+        <div class="fact"><div class="fact-n am">23</div><div class="fact-l">Surgeries next week</div></div>
+        <div class="fact"><div class="fact-n">6–8 wks</div><div class="fact-l">Supplier blackout</div></div>
+      </div>
+    </div>
+    <div class="asb"><strong>ASHRM Resource:</strong> ERM Framework (2020) — Operational Domain. Key issues: single supplier dependency, no Business Continuity Plan, missing Risk Register entry.</div>
+    <div style="margin-top:16px">
+      <button class="btn btn-c" onclick="showPage('pgDec', document.querySelectorAll('.ntab')[1])">Start my Round 1 decisions →</button>
+    </div>
+  </div>
+
+  <!-- DECISIONS PAGE -->
+  <div id="pgDec" class="page">
+    <div id="decContent"></div>
+  </div>
+
+  <!-- GROUP DASHBOARD -->
+  <div id="pgGrp" class="page">
+    <div class="phase-bar">
+      <div class="dot dot-r" id="phaseDot"></div>
+      <span id="phaseText">Waiting for members to submit individual decisions...</span>
+    </div>
+    <div class="stitle">Group members — individual answers</div>
+    <div class="mgrid" id="memberGrid"></div>
+    <div class="card">
+      <div class="card-h">
+        <h3>Answer distribution — Question <span id="dqNum">1</span></h3>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-o" onclick="prevQ()" style="padding:4px 9px;font-size:11px">‹</button>
+          <button class="btn btn-o" onclick="nextQ()" style="padding:4px 9px;font-size:11px">›</button>
+        </div>
+      </div>
+      <div class="card-b" id="distContent"></div>
+    </div>
+    <div class="card">
+      <div class="card-h">
+        <h3>Group decision submission</h3>
+        <span style="font-size:10px;background:#FFF3CD;color:#854F0B;padding:2px 8px;border-radius:4px;font-family:monospace">Group Leader only</span>
+      </div>
+      <div class="card-b" id="gdContent"></div>
+    </div>
+  </div>
+
+  <!-- RISK REGISTER -->
+  <div id="pgRR" class="page">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div class="stitle" style="margin:0">Risk Register — <span id="rrGroupName"></span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-o" onclick="addRRRow()" style="font-size:12px;padding:7px 12px">+ Add risk</button>
+        <button class="btn btn-c" onclick="saveRR()" style="font-size:12px;padding:7px 12px" id="saveRRBtn">Save register</button>
+      </div>
+    </div>
+    <div class="met" id="rrMetrics"></div>
+    <div class="rr-wrap">
+      <table class="rrtbl">
+        <thead>
+          <tr>
+            <th>ID</th><th>ASHRM Domain</th><th>Risk Name</th>
+            <th>L (1-5)</th><th>C (1-5)</th><th>RPN</th><th>Level</th>
+            <th>Mitigation Action</th>
+            <th>Res.L</th><th>Res.C</th><th>Residual</th>
+            <th>Status</th><th>Owner</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="rrBody"></tbody>
+      </table>
+    </div>
+    <div class="ashrm" style="margin-top:12px">
+      <strong>ASHRM ERM Domains:</strong> Operational · Clinical/Patient Safety · Financial · Legal/Regulatory · Human Capital · Strategic · Technology · Hazard<br>
+      <strong>Scoring note:</strong> Likelihood × Consequence = RPN. 15–25 = Extreme · 10–14 = High · 5–9 = Medium · 1–4 = Low
+    </div>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div id="pgLB" class="page">
+    <div class="stitle">Leaderboard — Round <span id="lbRoundNum">1</span></div>
+    <div class="met" id="lbMetrics"></div>
+    <div id="lbList"></div>
+    <div class="tip">
+      <strong>Scoring:</strong> Best answer = +10 pts · Good = +7 pts · Acceptable = +4 pts · Wrong = 0 pts · Harmful = −5 pts<br>
+      <strong>Risk Register bonus:</strong> Up to +10 pts for quality risk identification (2 pts per risk with a complete mitigation strategy)
+    </div>
+  </div>
+</div>
+
+<script>
+// QUESTION DATA — ALL 5 ROUNDS
+const ROUNDS = {
+  1: {
+    title: "Round 1 — Risk Identification",
+    ashrm: "Operational Domain",
+    questions: [
+      { q: "Who do you notify FIRST when the supplier calls?",
+        bloom: "Apply",
+        opts: { A:"Escalate to CEO and Hospital Director immediately", B:"Notify the Theatre Manager first", C:"Contact Finance for budget", D:"Wait for supply chain manager" },
+        pts: { A:10, B:7, C:4, D:0 }, ans:'A' },
+      { q: "What do you add to the Risk Register RIGHT NOW?",
+        bloom: "Apply",
+        opts: { A:"Single Supplier + Supply Chain Disruption (both HIGH)", B:"Flooding Event (Hazard) only", C:"All hospital supply risks", D:"Nothing yet" },
+        pts: { A:10, B:4, C:7, D:0 }, ans:'A' },
+      { q: "Which ASHRM ERM domain is this crisis PRIMARILY under?",
+        bloom: "Understand",
+        opts: { A:"Operational Risk", B:"Hazard Risk", C:"Financial Risk", D:"Strategic Risk" },
+        pts: { A:10, B:7, C:4, D:4 }, ans:'A' },
+      { q: "What risk identification tool do you use FIRST?",
+        bloom: "Apply",
+        opts: { A:"Risk Register update + SWOT Analysis", B:"Root Cause Analysis", C:"FMEA", D:"Risk Matrix" },
+        pts: { A:10, B:4, C:7, D:4 }, ans:'A' },
+      { q: "What action do you take about current stock levels?",
+        bloom: "Evaluate",
+        opts: { A:"Immediate physical audit — exact numbers within 2 hours", B:"Estimate from memory", C:"Trust supplier statement", D:"Wait until tomorrow" },
+        pts: { A:10, B:4, C:4, D:-5 }, ans:'A' },
+    ]
+  },
+  2: {
+    title: "Round 2 — Risk Assessment",
+    ashrm: "Clinical/Patient Safety Domain",
+    questions: [
+      { q: "What risk assessment tool do you use?",
+        bloom: "Apply",
+        opts: { A:"5×5 Risk Matrix (L × C) + RPN", B:"Qualitative description", C:"Financial analysis only", D:"No formal tool" },
+        pts: { A:10, B:4, C:4, D:-5 }, ans:'A' },
+      { q: "How do you rate LIKELIHOOD of patient harm?",
+        bloom: "Evaluate",
+        opts: { A:"5 — Almost Certain", B:"3 — Possible", C:"2 — Unlikely", D:"1 — Rare" },
+        pts: { A:10, B:7, C:0, D:-5 }, ans:'A' },
+      { q: "What risk level for cancer surgery?",
+        bloom: "Evaluate",
+        opts: { A:"CRITICAL/EXTREME", B:"HIGH", C:"MEDIUM", D:"LOW" },
+        pts: { A:10, B:4, C:0, D:-5 }, ans:'A' },
+      { q: "How do you prioritise surgeries?",
+        bloom: "Evaluate",
+        opts: { A:"Clinical priority: life-threat, cancer, semi-urgent, elective", B:"Equal priority", C:"Revenue-based", D:"Cancel all" },
+        pts: { A:10, B:-5, C:0, D:4 }, ans:'A' },
+      { q: "Conduct FMEA on improvised draping?",
+        bloom: "Apply",
+        opts: { A:"Yes, immediately BEFORE cases", B:"Schedule for next week", C:"No, too time-consuming", D:"No, overreaction" },
+        pts: { A:10, B:4, C:4, D:-5 }, ans:'A' },
+    ]
+  },
+  3: {
+    title: "Round 3 — Mitigation & Control",
+    ashrm: "Financial & Legal Domains",
+    questions: [
+      { q: "What is your IMMEDIATE mitigation strategy?",
+        bloom: "Apply",
+        opts: { A:"Multi-source + cancel non-emergencies + activate BCP + document", B:"Contact UAE supplier", C:"Cancel ALL surgeries", D:"Continue with incompatible supplies" },
+        pts: { A:10, B:4, C:0, D:-5 }, ans:'A' },
+      { q: "Apply Hierarchy of Controls?",
+        bloom: "Apply",
+        opts: { A:"All 5 levels documented", B:"PPE only", C:"Administrative only", D:"Engineering only" },
+        pts: { A:10, B:4, C:4, D:4 }, ans:'A' },
+      { q: "When notify MoPH?",
+        bloom: "Apply",
+        opts: { A:"Within 48 hours — by Jan 17", B:"After crisis resolved", C:"Only if death", D:"Do not notify" },
+        pts: { A:10, B:0, C:-5, D:-5 }, ans:'A' },
+      { q: "Communicate with 41 cancelled patients?",
+        bloom: "Evaluate",
+        opts: { A:"Full disclosure: what, why, alternatives", B:"General apology letter", C:"Only to some patients", D:"Wait until restored" },
+        pts: { A:10, B:4, C:0, D:0 }, ans:'A' },
+      { q: "What financial risk control?",
+        bloom: "Apply",
+        opts: { A:"Emergency budget + cost tracking + insurer + Board report", B:"Finance handles it", C:"Ignore", D:"Reduce all costs 20%" },
+        pts: { A:10, B:4, C:4, D:-5 }, ans:'A' },
+    ]
+  },
+  4: {
+    title: "Round 4 — Monitoring & KRIs",
+    ashrm: "Human Capital Domain",
+    questions: [
+      { q: "What KRIs do you set up?",
+        bloom: "Create",
+        opts: { A:"4 KRIs: stock, SSI, supplier perf, cancellations", B:"Financial KPIs only", C:"No formal KRIs", D:"SSI only" },
+        pts: { A:10, B:4, C:-5, D:4 }, ans:'A' },
+      { q: "Communicate corrective plan to MoPH?",
+        bloom: "Evaluate",
+        opts: { A:"Full transparent: root cause, timeline, KRI dashboard", B:"Minimal report", C:"Request delay", D:"Dispute MoPH" },
+        pts: { A:10, B:4, C:0, D:-5 }, ans:'A' },
+      { q: "78% of nurses didn't know what to do?",
+        bloom: "Apply",
+        opts: { A:"Training + BCP roles + assessment + drill. Just Culture.", B:"Email reminder", C:"Annual training", D:"Warnings" },
+        pts: { A:10, B:4, C:4, D:-5 }, ans:'A' },
+      { q: "SSI surveillance system?",
+        bloom: "Apply",
+        opts: { A:"Enhanced: daily, microbiologist, weekly report", B:"Continue monthly", C:"Weekly with Manager only", D:"Wait for results" },
+        pts: { A:10, B:-5, C:4, D:4 }, ans:'A' },
+      { q: "Report to Hospital Board?",
+        bloom: "Evaluate",
+        opts: { A:"Formal Risk Report: summary, matrix, timeline, impact, plan", B:"Verbal to CEO", C:"Board doesn't need to know", D:"Wait until resolved" },
+        pts: { A:10, B:4, C:-5, D:4 }, ans:'A' },
+    ]
+  },
+  5: {
+    title: "Round 5 — Evaluation & System Learning",
+    ashrm: "ASHRM ERM Self-Assessment",
+    questions: [
+      { q: "What RCA method?",
+        bloom: "Evaluate",
+        opts: { A:"5 Whys + Fishbone + Contributing Factor Analysis", B:"5 Whys only", C:"Write incident report", D:"Skip RCA" },
+        pts: { A:10, B:4, C:4, D:-5 }, ans:'A' },
+      { q: "System-level changes?",
+        bloom: "Create",
+        opts: { A:"Multi-supplier + 30-day BCP + HIGH KRI + owner", B:"Reliable single supplier", C:"Register update only", D:"Hire more staff" },
+        pts: { A:10, B:-5, C:4, D:4 }, ans:'A' },
+      { q: "Apply Just Culture?",
+        bloom: "Evaluate",
+        opts: { A:"Separate failures from decisions. No blame for untrained.", B:"Discipline manager", C:"Entirely external", D:"Dismiss nurse" },
+        pts: { A:10, B:-5, C:4, D:-5 }, ans:'A' },
+      { q: "Updated Risk Register across domains?",
+        bloom: "Create",
+        opts: { A:"All 5: Operational, Clinical, Financial, Legal, Human Capital", B:"Operational only", C:"Only harm risks", D:"One entry close review" },
+        pts: { A:10, B:4, C:4, D:-5 }, ans:'A' },
+      { q: "30/60/90-day roadmap?",
+        bloom: "Create",
+        opts: { A:"30d plan, 60d approval, 90d drill/review. Named owners.", B:"General list", C:"No metrics", D:"No formal roadmap" },
+        pts: { A:10, B:4, C:4, D:-5 }, ans:'A' },
+    ]
+  }
+};
+
+const DEFAULT_RR = [
+  {id:'OR-1',domain:'Operational',name:'Single Supplier Dependency',L:5,C:5,mit:'Multi-supplier policy: min 2 approved vendors within 30 days',RL:2,RC:3,status:'In Progress',owner:'CPO'},
+  {id:'OR-2',domain:'Operational',name:'No Business Continuity Plan',L:5,C:5,mit:'Write and board-approve BCP within 60 days',RL:2,RC:3,status:'In Progress',owner:'RM'},
+  {id:'CR-1',domain:'Clinical',name:'Improvised Draping — Contamination Risk',L:5,C:4,mit:'FMEA before emergency cases. Written sign-off required.',RL:1,RC:2,status:'In Progress',owner:'MD'},
+  {id:'LR-1',domain:'Legal/Regulatory',name:'MoPH Notification Breach',L:5,C:4,mit:'48-hour notification checklist. All RM staff trained within 30 days.',RL:1,RC:2,status:'In Progress',owner:'CO'},
+  {id:'FR-1',domain:'Financial',name:'Surgical Revenue Loss — QAR 1.8M',L:5,C:4,mit:'Emergency budget activated. Hospital insurer notified.',RL:2,RC:3,status:'In Progress',owner:'CFO'},
+];
+
+// STATE
+var user = { name:'', id:'', group:'', role:'student' };
+var currentRound = 1;
+var myAnswers = {};
+var submitted = false;
+var rrRows = [];
+var editingIdx = null;
+var viewingQ = 1;
+
+function saveLS(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+}
+function loadLS(key, def) {
+  try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch(e) { return def; }
+}
+function groupKey() { return user.group + '_r' + currentRound; }
+
+// LOGIN
+document.getElementById('enterBtn').addEventListener('click', function() {
+  var name = document.getElementById('inpName').value.trim();
+  var id = document.getElementById('inpID').value.trim();
+  var group = document.getElementById('inpGroup').value;
+  var role = document.getElementById('inpRole').value;
+
+  if (!name) { alert('Please enter your full name.'); return; }
+  if (!id) { alert('Please enter your student ID.'); return; }
+  if (!group) { alert('Please select your group.'); return; }
+
+  user = { name:name, id:id, group:group, role:role };
+  saveLS('user_' + id, user);
+
+  currentRound = loadLS('current_round', 1);
+  submitted = loadLS('submitted_' + id + '_r' + currentRound, false);
+  myAnswers = loadLS('answers_' + id + '_r' + currentRound, {});
+  rrRows = loadLS('rr_' + group, JSON.parse(JSON.stringify(DEFAULT_RR)));
+
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('appView').style.display = 'block';
+  document.getElementById('hdrUser').textContent = name + ' · ' + group;
+  document.getElementById('hdrRound').textContent = 'Round ' + currentRound;
+  document.getElementById('rrGroupName').textContent = group;
+
+  renderDecisions();
+  renderGroup();
+  renderRR();
+  renderLB();
+
+  setInterval(function() {
+    renderGroup();
+    renderLB();
+  }, 4000);
+});
+
+// NAVIGATION
+function showPage(pageId, tab) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('on'); });
+  document.querySelectorAll('.ntab').forEach(function(t) { t.classList.remove('on'); });
+  document.getElementById(pageId).classList.add('on');
+  if (tab) tab.classList.add('on');
+  if (pageId === 'pgGrp') renderGroup();
+  if (pageId === 'pgLB') renderLB();
+  if (pageId === 'pgRR') renderRR();
+}
+
+// DECISIONS
+function renderDecisions() {
+  var rnd = ROUNDS[currentRound];
+  if (!rnd) {
+    document.getElementById('decContent').innerHTML = '<div class="empty"><h4>No active round</h4><p>Wait for the instructor to open the next round.</p></div>';
+    return;
+  }
+
+  if (submitted) {
+    var html = '<div class="submitted-ok"><h3>Your decisions are submitted!</h3><p>Go to the Group Dashboard tab to see your group\'s answers and start the discussion.</p></div>';
+    html += '<div class="stitle" style="margin-top:16px">Your submitted answers — review</div>';
+    rnd.questions.forEach(function(q, i) {
+      var qn = 'q' + (i + 1);
+      var ans = myAnswers[qn] || '?';
+      var pts = (q.pts[ans] || 0);
+      var ptsCls = pts === 10 ? 'p10' : pts === 7 ? 'p7' : pts === 4 ? 'p4' : pts === 0 ? 'p0' : 'pm5';
+      var isCorrect = ans === q.ans;
+      html += '<div class="qcard">';
+      html += '<div class="qlabel">Decision ' + (i+1) + ' — You chose: <strong>' + ans + '</strong> ';
+      html += '<span class="pts ' + ptsCls + '">' + (pts > 0 ? '+' : '') + pts + ' pts</span>';
+      if (isCorrect) html += ' <span class="pts p10">Best answer ✓</span>';
+      html += '</div>';
+      html += '<div class="qtext">' + q.q + '</div>';
+      html += '</div>';
+    });
+    document.getElementById('decContent').innerHTML = html;
+    return;
+  }
+
+  var html = '<div class="stitle">' + rnd.title + '</div>';
+  rnd.questions.forEach(function(q, i) {
+    var qn = 'q' + (i + 1);
+    var sel = myAnswers[qn] || '';
+    html += '<div class="qcard">';
+    html += '<div class="qlabel">DECISION ' + (i+1) + ' of 5 · Bloom\'s: ' + q.bloom + '</div>';
+    html += '<div class="qtext">' + q.q + '</div>';
+    html += '<div class="opts">';
+    var letters = ['A', 'B', 'C', 'D'];
+    letters.forEach(function(letter) {
+      var pts = q.pts[letter];
+      var ptsCls = pts === 10 ? 'p10' : pts === 7 ? 'p7' : pts === 4 ? 'p4' : pts === 0 ? 'p0' : 'pm5';
+      var isSel = sel === letter;
+      html += '<div class="opt' + (isSel ? ' sel' : '') + '" onclick="selectAnswer(\'' + qn + '\', \'' + letter + '\')">';
+      html += '<div class="olet">' + letter + '</div>';
+      html += '<div style="flex:1">' + q.opts[letter] + '</div>';
+      html += '<span class="pts ' + ptsCls + '">' + (pts > 0 ? '+' : '') + pts + ' pts</span>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+
+  var allAnswered = rnd.questions.every(function(_, i) { return myAnswers['q' + (i+1)]; });
+  var answered = Object.keys(myAnswers).length;
+  html += '<div style="margin-top:14px;display:flex;align-items:center;gap:12px">';
+  html += '<button class="btn btn-p" onclick="submitDecisions()" ' + (allAnswered ? '' : 'disabled') + '>';
+  html += allAnswered ? 'Submit my decisions' : 'Answer all 5 questions to submit';
+  html += '</button>';
+  if (!allAnswered) html += '<span style="font-size:12px;color:var(--mu)">' + answered + ' / 5 answered</span>';
+  html += '</div>';
+
+  document.getElementById('decContent').innerHTML = html;
+}
+
+function selectAnswer(qn, letter) {
+  if (submitted) return;
+  myAnswers[qn] = letter;
+  saveLS('answers_' + user.id + '_r' + currentRound, myAnswers);
+  renderDecisions();
+}
+
+function submitDecisions() {
+  var rnd = ROUNDS[currentRound];
+  var allAnswered = rnd.questions.every(function(_, i) { return myAnswers['q' + (i+1)]; });
+  if (!allAnswered) { alert('Please answer all 5 questions before submitting.'); return; }
+
+  var subs = loadLS('subs_' + groupKey(), []);
+  var existing = -1;
+  subs.forEach(function(s, i) { if (s.id === user.id) existing = i; });
+  var entry = {
+    id: user.id,
+    name: user.name,
+    group: user.group,
+    round: currentRound,
+    answers: JSON.parse(JSON.stringify(myAnswers)),
+    submittedAt: new Date().toISOString()
+  };
+  if (existing >= 0) subs[existing] = entry; else subs.push(entry);
+  saveLS('subs_' + groupKey(), subs);
+
+  submitted = true;
+  saveLS('submitted_' + user.id + '_r' + currentRound, true);
+  renderDecisions();
+  renderGroup();
+  renderLB();
+}
+
+// GROUP DASHBOARD
+function renderGroup() {
+  var subs = loadLS('subs_' + groupKey(), []);
+  var gd = loadLS('gd_' + groupKey(), null);
+  var rnd = ROUNDS[currentRound];
+
+  // Phase bar
+  var phaseDot = document.getElementById('phaseDot');
+  var phaseText = document.getElementById('phaseText');
+  if (gd) {
+    phaseDot.className = 'dot dot-g';
+    phaseText.textContent = 'Group decision submitted! Check the Leaderboard to see your score.';
+  } else if (subs.length > 0) {
+    phaseDot.className = 'dot dot-a';
+    phaseText.textContent = subs.length + ' member(s) submitted. Discuss differences then submit the group decision below.';
+  } else {
+    phaseDot.className = 'dot dot-r';
+    phaseText.textContent = 'Waiting for members to submit their individual decisions...';
+  }
+
+  // Member grid
+  var mgHtml = '';
+  if (subs.length === 0) {
+    mgHtml = '<div class="empty" style="grid-column:1/-1"><h4>No submissions yet</h4><p>Members appear here as they submit their decisions.</p></div>';
+  } else {
+    subs.forEach(function(s) {
+      var initials = s.name.split(' ').map(function(w) { return w[0] || ''; }).join('').substring(0, 2).toUpperCase();
+      mgHtml += '<div class="mcard"><div class="mname"><div class="mavatar">' + initials + '</div>' + s.name + '</div><div class="mars">';
+      for (var i = 1; i <= 5; i++) {
+        var a = s.answers['q' + i] || '';
+        mgHtml += '<div class="mar"><span class="marq">Q' + i + '</span><span class="marv ' + (a ? 'v'+a : 'vn') + '">' + (a || '—') + '</span></div>';
+      }
+      mgHtml += '</div></div>';
+    });
+  }
+  document.getElementById('memberGrid').innerHTML = mgHtml;
+
+  renderDist(subs, rnd);
+  renderGD(subs, gd, rnd);
+}
+
+function renderDist(subs, rnd) {
+  document.getElementById('dqNum').textContent = viewingQ;
+  if (!rnd || subs.length === 0) {
+    document.getElementById('distContent').innerHTML = '<div class="empty" style="padding:16px 0"><p>No submissions yet</p></div>';
+    return;
+  }
+  var q = rnd.questions[viewingQ - 1];
+  var counts = { A:0, B:0, C:0, D:0 };
+  subs.forEach(function(s) { var a = s.answers['q' + viewingQ]; if (a) counts[a]++; });
+  var total = subs.length;
+  var html = '<div style="font-size:11px;color:var(--mu);margin-bottom:10px">' + q.q + '</div>';
+  ['A','B','C','D'].forEach(function(letter) {
+    var pct = total > 0 ? Math.round(counts[letter] / total * 100) : 0;
+    var pts = q.pts[letter];
+    var ptsCls = pts === 10 ? 'p10' : pts === 7 ? 'p7' : pts === 4 ? 'p4' : pts === 0 ? 'p0' : 'pm5';
+    var barColor = pts === 10 ? '#1D9E75' : pts === 7 ? '#378ADD' : pts >= 4 ? '#EF9F27' : '#E24B4A';
+    html += '<div class="dbar">';
+    html += '<div class="dbar-top"><span><strong style="font-family:monospace">' + letter + '</strong> <span style="color:var(--mu)">' + counts[letter] + ' vote' + (counts[letter] !== 1 ? 's' : '') + ' (' + pct + '%)</span></span><span class="pts ' + ptsCls + '">' + (pts > 0 ? '+' : '') + pts + ' pts</span></div>';
+    html += '<div style="height:8px;background:var(--sf);border-radius:4px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:4px;transition:width .4s"></div></div>';
+    html += '</div>';
+  });
+  document.getElementById('distContent').innerHTML = html;
+}
+
+function prevQ() { if (viewingQ > 1) { viewingQ--; renderDist(loadLS('subs_' + groupKey(), []), ROUNDS[currentRound]); } }
+function nextQ() { if (viewingQ < 5) { viewingQ++; renderDist(loadLS('subs_' + groupKey(), []), ROUNDS[currentRound]); } }
+
+function renderGD(subs, gd, rnd) {
+  var html = '';
+  if (gd) {
+    var sc = 0;
+    if (rnd) rnd.questions.forEach(function(q, i) { sc += (q.pts[gd.answers['q'+(i+1)]] || 0); });
+    html = '<div class="submitted-ok"><h3>Group decision submitted!</h3><p>Your group scored <strong>' + sc + ' / 50 points</strong> for Round ' + currentRound + '.</p></div>';
+  } else if (user.role === 'leader' || user.role === 'instructor') {
+    if (subs.length === 0) {
+      html = '<div class="empty"><p>Waiting for at least one member to submit before the group decision can be made.</p></div>';
+    } else {
+      html = '<p style="font-size:12px;color:var(--mu);margin-bottom:12px">After your group discussion, select the final agreed answer for each question below.</p>';
+      if (rnd) {
+        rnd.questions.forEach(function(q, i) {
+          html += '<div style="margin-bottom:12px"><div style="font-size:12px;font-weight:600;color:var(--nv);margin-bottom:6px">Decision ' + (i+1) + ': ' + q.q + '</div>';
+          html += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+          ['A','B','C','D'].forEach(function(letter) {
+            var pts = q.pts[letter];
+            var ptsCls = pts === 10 ? 'p10' : pts === 7 ? 'p7' : pts === 4 ? 'p4' : pts === 0 ? 'p0' : 'pm5';
+            html += '<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:5px 10px;border:1.5px solid var(--bd);border-radius:7px;background:var(--sf)">';
+            html += '<input type="radio" name="gdq' + (i+1) + '" value="' + letter + '" style="margin:0"> <strong>' + letter + '</strong> <span class="pts ' + ptsCls + '">' + (pts > 0 ? '+' : '') + pts + '</span></label>';
+          });
+          html += '</div></div>';
+        });
+        html += '<button class="btn btn-c" onclick="submitGroupDecision()" style="margin-top:8px">Submit group decision</button>';
+      }
+    }
+  } else {
+    html = '<div class="empty"><p>Only the Group Leader can submit the group decision after discussion.</p></div>';
+  }
+  document.getElementById('gdContent').innerHTML = html;
+}
+
+function submitGroupDecision() {
+  var rnd = ROUNDS[currentRound];
+  var ans = {};
+  var ok = true;
+  for (var i = 1; i <= 5; i++) {
+    var sel = document.querySelector('input[name="gdq' + i + '"]:checked');
+    if (!sel) { ok = false; break; }
+    ans['q' + i] = sel.value;
+  }
+  if (!ok) { alert('Please select an answer for all 5 questions.'); return; }
+  var sc = 0;
+  if (rnd) rnd.questions.forEach(function(q, idx) { sc += (q.pts[ans['q'+(idx+1)]] || 0); });
+  var gd = { group:user.group, round:currentRound, answers:ans, score:sc, submittedAt:new Date().toISOString() };
+  saveLS('gd_' + groupKey(), gd);
+  var allGD = loadLS('allGD', []);
+  var ex = -1; allGD.forEach(function(g, i) { if (g.group === user.group && g.round === currentRound) ex = i; });
+  if (ex >= 0) allGD[ex] = gd; else allGD.push(gd);
+  saveLS('allGD', allGD);
+  renderGroup();
+  renderLB();
+}
+
+// RISK REGISTER
+function getLvlCls(rpn) { return rpn >= 15 ? 'lext' : rpn >= 10 ? 'lhi' : rpn >= 5 ? 'lmed' : 'llow'; }
+function getLvlLbl(rpn) { return rpn >= 15 ? 'EXTREME' : rpn >= 10 ? 'HIGH' : rpn >= 5 ? 'MEDIUM' : 'LOW'; }
+function getDomCls(d) { return d === 'Operational' ? 'dop' : d === 'Clinical' ? 'dcl' : d === 'Financial' ? 'dfi' : d === 'Legal/Regulatory' ? 'dlr' : 'dhc'; }
+function getStCls(s) { return s === 'Open' ? 'sop' : s === 'In Progress' ? 'spr' : 'sdn'; }
+
+function renderRR() {
+  var ext = rrRows.filter(function(r) { return r.L*r.C >= 15; }).length;
+  var open = rrRows.filter(function(r) { return r.status === 'Open'; }).length;
+  var reduced = rrRows.filter(function(r) { return r.RL*r.RC < r.L*r.C; }).length;
+  document.getElementById('rrMetrics').innerHTML =
+    '<div class="metc"><div class="metn">'+rrRows.length+'</div><div class="metl">Total risks</div></div>'+
+    '<div class="metc mred"><div class="metn">'+ext+'</div><div class="metl">Extreme (15–25)</div></div>'+
+    '<div class="metc"><div class="metn">'+open+'</div><div class="metl">Open</div></div>'+
+    '<div class="metc mgrn"><div class="metn">'+reduced+'</div><div class="metl">Risk reduced</div></div>';
+
+  var DOMS = ['Operational','Clinical','Financial','Legal/Regulatory','Human Capital','Strategic','Technology','Hazard'];
+  var STATS = ['Open','In Progress','Closed'];
+  var html = '';
+  rrRows.forEach(function(r, i) {
+    var rpn = r.L * r.C;
+    var res = r.RL * r.RC;
+    if (editingIdx === i) {
+      html += '<tr style="background:#EBF2FB">' +
+        '<td><input class="rinput" value="'+r.id+'" onchange="rrEdit('+i+',\'id\',this.value)" style="width:44px"></td>' +
+        '<td><select class="rinput" onchange="rrEdit('+i+',\'domain\',this.value)" style="cursor:pointer">'+DOMS.map(function(d){return'<option'+(d===r.domain?' selected':'')+'>'+d+'</option>';}).join('')+'</select></td>' +
+        '<td><input class="rinput" value="'+r.name+'" onchange="rrEdit('+i+',\'name\',this.value)" style="min-width:110px"></td>' +
+        '<td><input class="rinput" type="number" min="1" max="5" value="'+r.L+'" onchange="rrEdit('+i+',\'L\',+this.value)" style="width:38px"></td>' +
+        '<td><input class="rinput" type="number" min="1" max="5" value="'+r.C+'" onchange="rrEdit('+i+',\'C\',+this.value)" style="width:38px"></td>' +
+        '<td><strong>'+rpn+'</strong></td><td><span class="'+getLvlCls(rpn)+'">'+getLvlLbl(rpn)+'</span></td>' +
+        '<td><input class="rinput" value="'+r.mit+'" onchange="rrEdit('+i+',\'mit\',this.value)" style="min-width:130px"></td>' +
+        '<td><input class="rinput" type="number" min="1" max="5" value="'+r.RL+'" onchange="rrEdit('+i+',\'RL\',+this.value)" style="width:38px"></td>' +
+        '<td><input class="rinput" type="number" min="1" max="5" value="'+r.RC+'" onchange="rrEdit('+i+',\'RC\',+this.value)" style="width:38px"></td>' +
+        '<td><span class="'+getLvlCls(res)+'">'+getLvlLbl(res)+' '+res+'</span></td>' +
+        '<td><select class="rinput" onchange="rrEdit('+i+',\'status\',this.value)" style="cursor:pointer">'+STATS.map(function(s){return'<option'+(s===r.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select></td>' +
+        '<td><input class="rinput" value="'+r.owner+'" onchange="rrEdit('+i+',\'owner\',this.value)" style="min-width:90px"></td>' +
+        '<td><button class="btn btn-c" onclick="rrSaveRow('+i+')" style="font-size:11px;padding:4px 8px">Save</button></td>' +
+        '</tr>';
+    } else {
+      html += '<tr>' +
+        '<td style="font-family:monospace;font-weight:600;color:var(--nv);font-size:10px">'+r.id+'</td>' +
+        '<td><span class="'+getDomCls(r.domain)+'">'+r.domain+'</span></td>' +
+        '<td style="font-weight:600;color:var(--nv);font-size:12px">'+r.name+'</td>' +
+        '<td style="text-align:center;font-family:monospace">'+r.L+'</td>' +
+        '<td style="text-align:center;font-family:monospace">'+r.C+'</td>' +
+        '<td style="text-align:center;font-family:monospace;font-weight:600">'+rpn+'</td>' +
+        '<td><span class="'+getLvlCls(rpn)+'">'+getLvlLbl(rpn)+'</span></td>' +
+        '<td style="font-size:11px;color:var(--mu)">'+r.mit+'</td>' +
+        '<td style="text-align:center;font-family:monospace">'+r.RL+'</td>' +
+        '<td style="text-align:center;font-family:monospace">'+r.RC+'</td>' +
+        '<td><span class="'+getLvlCls(res)+'">'+getLvlLbl(res)+' '+res+'</span></td>' +
+        '<td><span class="'+getStCls(r.status)+'">'+r.status+'</span></td>' +
+        '<td style="font-size:11px;color:var(--mu)">'+r.owner+'</td>' +
+        '<td><button class="btn btn-o" onclick="editingIdx='+i+';renderRR()" style="font-size:11px;padding:4px 8px">Edit</button> <button onclick="rrDelete('+i+')" style="background:none;border:none;color:var(--rd);cursor:pointer;font-size:11px;padding:2px 4px">✕</button></td>' +
+        '</tr>';
+    }
+  });
+  document.getElementById('rrBody').innerHTML = html;
+}
+
+function rrEdit(i, field, val) { rrRows[i][field] = val; }
+function rrSaveRow(i) { editingIdx = null; renderRR(); }
+function addRRRow() {
+  rrRows.push({id:'R-'+(rrRows.length+1),domain:'Operational',name:'New risk — click Edit to name it',L:3,C:3,mit:'Define mitigation action',RL:2,RC:2,status:'Open',owner:'Risk Manager'});
+  editingIdx = rrRows.length - 1;
+  renderRR();
+}
+function rrDelete(i) {
+  if (confirm('Remove this risk from the register?')) { rrRows.splice(i, 1); renderRR(); }
+}
+function saveRR() {
+  saveLS('rr_' + user.group, rrRows);
+  var allRR = loadLS('allRR', {});
+  allRR[user.group] = { group:user.group, rows:rrRows, savedAt:new Date().toISOString() };
+  saveLS('allRR', allRR);
+  var btn = document.getElementById('saveRRBtn');
+  btn.textContent = 'Saved! ✓';
+  setTimeout(function() { btn.textContent = 'Save register'; }, 2000);
+  renderLB();
+}
+
+// LEADERBOARD
+function renderLB() {
+  document.getElementById('lbRoundNum').textContent = currentRound;
+  var allGD = loadLS('allGD', []);
+  var allRR = loadLS('allRR', {});
+  var GROUPS = ['Group A','Group B','Group C','Group D','Group E','Group F'];
+  var scores = {};
+  GROUPS.forEach(function(g) { scores[g] = { dec:0, rr:0, tot:0, submitted:false }; });
+  allGD.forEach(function(gd) {
+    if (gd.round === currentRound && scores[gd.group]) {
+      scores[gd.group].dec = gd.score;
+      scores[gd.group].submitted = true;
+    }
+  });
+  Object.values(allRR).forEach(function(rr) {
+    if (scores[rr.group]) {
+      var bonus = rr.rows.filter(function(r) { return r.mit && r.mit.length > 15; }).length * 2;
+      scores[rr.group].rr = Math.min(10, bonus);
+    }
+  });
+  Object.values(scores).forEach(function(s) { s.tot = s.dec + s.rr; });
+  var sorted = Object.entries(scores).filter(function(e) { return e[1].submitted || e[1].rr > 0; })
+    .sort(function(a, b) { return b[1].tot - a[1].tot; });
+  var maxScore = sorted.length > 0 ? sorted[0][1].tot : 50;
+
+  var metHtml = '<div class="metc"><div class="metn">'+sorted.length+'</div><div class="metl">Active groups</div></div>' +
+    '<div class="metc"><div class="metn">'+currentRound+'/5</div><div class="metl">Current round</div></div>' +
+    '<div class="metc mgrn"><div class="metn">'+(sorted.length > 0 ? sorted[0][1].tot : 0)+'</div><div class="metl">Top score</div></div>';
+  document.getElementById('lbMetrics').innerHTML = metHtml;
+
+  var lbHtml = '';
+  if (sorted.length === 0) {
+    lbHtml = '<div class="empty"><h4>No group decisions submitted yet</h4><p>Groups appear here after the group leader submits the group decision.</p></div>';
+  } else {
+    sorted.forEach(function(entry, i) {
+      var name = entry[0]; var s = entry[1];
+      var rankCls = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
+      var pct = maxScore > 0 ? Math.round(s.tot / maxScore * 100) : 0;
+      lbHtml += '<div class="lbrow">' +
+        '<div class="lbrank '+rankCls+'">'+(i+1)+'</div>' +
+        '<div style="flex:1"><div class="lbname">'+name+'</div><div class="lbsub">Decisions: '+s.dec+' pts · Register bonus: +'+s.rr+' pts</div></div>' +
+        '<div style="display:flex;align-items:center;gap:10px"><div class="lbbar"><div class="lbfill" style="width:'+pct+'%"></div></div><div class="lbtot">'+s.tot+'</div></div>' +
+        '</div>';
+    });
+  }
+  document.getElementById('lbList').innerHTML = lbHtml;
+}
+</script>
+</body>
+</html>
