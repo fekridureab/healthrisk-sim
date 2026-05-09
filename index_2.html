@@ -23,7 +23,8 @@ body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);m
 .role-tabs{display:flex;gap:0;margin-bottom:20px;border:1.5px solid var(--bd);border-radius:9px;overflow:hidden}
 .role-tab{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;color:var(--mu);background:var(--sf);border:none;font-family:'Inter',sans-serif;transition:background .12s}
 .role-tab.on{background:var(--nv);color:#fff}
-.instr-pw{display:none}
+.studentFields{display:block}
+.instructorFields{display:none}
 .err{color:var(--rd);font-size:12px;margin-top:8px;text-align:center;display:none}
 #appView{display:none}
 .hdr{background:var(--nv);padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
@@ -58,7 +59,8 @@ body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);m
 .opt.sel{background:#E1F5EE;border-color:#1A7A4A}
 .opt.sel .olet{background:#1A7A4A;color:#fff}
 .olet{width:22px;height:22px;border-radius:5px;background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;font-family:monospace;color:var(--mu)}
-.pts{font-size:10px;padding:2px 7px;border-radius:4px;font-family:monospace;white-space:nowrap;margin-left:auto;font-weight:600}
+.pts{font-size:10px;padding:2px 7px;border-radius:4px;font-family:monospace;white-space:nowrap;margin-left:auto;font-weight:600;display:none}
+.is-instructor .pts{display:inline-block}
 .p10{background:#E1F5EE;color:#1A7A4A}
 .p7{background:#EBF2FB;color:#0C447C}
 .p4{background:#FFF3CD;color:#854F0B}
@@ -102,7 +104,9 @@ body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);m
 .gd-question{margin-bottom:14px;padding:12px;background:var(--sf);border-radius:9px;border:1.5px solid var(--bd)}
 .gd-qtitle{font-size:12px;font-weight:600;color:var(--nv);margin-bottom:8px}
 .gd-opts{display:flex;gap:6px;flex-wrap:wrap}
-.gd-opt label{display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:7px 12px;border:1.5px solid var(--bd);border-radius:7px;background:var(--wh);color:var(--tx);font-weight:500;transition:all .12s}
+.gd-opt{display:inline-flex;align-items:center;gap:5px}
+.gd-opt input[type=radio]{cursor:pointer}
+.gd-opt label{display:inline-flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:7px 12px;border:1.5px solid var(--bd);border-radius:7px;background:var(--wh);color:var(--tx);font-weight:500;transition:all .12s}
 .gd-opt input[type=radio]:checked + label{background:#E1F5EE;border-color:#1A7A4A;color:#1A7A4A}
 .met{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}
 .metc{background:var(--wh);border:1px solid var(--bd);border-radius:9px;padding:11px 13px}
@@ -115,18 +119,11 @@ body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);m
 .rrtbl th{background:var(--nv);color:#fff;padding:8px 9px;text-align:left;font-family:monospace;font-size:10px;white-space:nowrap}
 .rrtbl td{padding:7px 9px;border-bottom:1px solid var(--bd);vertical-align:middle}
 .rrtbl tr:hover td{background:#F7F9FC}
+.rrtbl tr.example-row td{background:#FFF8E1;border-bottom:2px solid #FAC775}
 .lext{background:#FCEBEB;color:#C0392B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
 .lhi{background:#FFF3CD;color:#854F0B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
 .lmed{background:#E6F1FB;color:#0C447C;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
 .llow{background:#E1F5EE;color:#1A7A4A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace;font-weight:600}
-.sop{background:#FCEBEB;color:#C0392B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
-.spr{background:#FFF3CD;color:#854F0B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
-.sdn{background:#E1F5EE;color:#1A7A4A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
-.dop{background:#EBF2FB;color:#1A3A6B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
-.dcl{background:#FCEBEB;color:#8B1A1A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
-.dfi{background:#FFF8E1;color:#5C3A00;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
-.dlr{background:#EDE7F6;color:#3B1A6B;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
-.dhc{background:#E0F5ED;color:#084A3A;padding:2px 6px;border-radius:3px;font-size:10px;font-family:monospace}
 .rinput{border:1px solid var(--cy);border-radius:5px;padding:3px 6px;font-size:11px;font-family:'Inter',sans-serif;background:#EBF2FB;color:var(--nv)}
 .lbrow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid var(--bd);background:var(--wh);margin-bottom:8px}
 .lbrank{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;min-width:30px;text-align:center}
@@ -145,13 +142,29 @@ body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);m
 .instr-member-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd);font-size:12px}
 .instr-member-row:last-child{border-bottom:none}
 .instr-answers{display:flex;gap:4px}
+.instr-answer-item{background:var(--sf);padding:3px 8px;border-radius:5px;font-family:monospace;font-weight:600;font-size:10px}
 .round-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .stitle{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--nv);margin-bottom:12px}
 .tip{background:#EBF2FB;border-radius:8px;padding:9px 12px;font-size:12px;color:#0C447C;line-height:1.6;margin-top:10px}
 .warn-box{background:#FFF3CD;border:1px solid #FAC775;border-radius:8px;padding:9px 12px;font-size:12px;color:#633806;margin-bottom:12px}
 .empty{text-align:center;padding:28px 16px;color:var(--mu);font-size:12px}
 .empty h4{font-size:14px;font-weight:600;color:var(--nv);margin-bottom:4px}
-@media(max-width:600px){.page{padding:12px}.met{grid-template-columns:1fr 1fr}.facts{grid-template-columns:1fr 1fr}}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+.score-card{background:var(--nv);border-radius:10px;padding:14px;color:#fff}
+.score-card h4{font-family:'Syne',sans-serif;color:var(--cy);font-size:13px;margin-bottom:6px}
+.score-card .score-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--cy)}
+.score-card .score-detail{font-size:11px;color:rgba(255,255,255,.7);margin-top:8px;line-height:1.5}
+.anskey{background:var(--wh);border:1px solid var(--bd);border-radius:9px;padding:12px;margin-bottom:10px}
+.anskey-q{font-size:12px;font-weight:600;color:var(--nv);margin-bottom:8px}
+.anskey-opts{display:flex;gap:6px;flex-wrap:wrap}
+.anskey-opt{padding:6px 10px;border-radius:6px;font-size:11px;font-weight:600;font-family:monospace;background:var(--sf);color:var(--mu)}
+.anskey-opt.correct{background:#E1F5EE;color:#1A7A4A;border:1px solid #1A7A4A}
+.instr-sub-list{background:var(--sf);border-radius:9px;padding:12px;margin-bottom:12px;font-size:11px}
+.instr-sub-member{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--bd)}
+.instr-sub-member:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.instr-sub-name{font-weight:600;color:var(--nv);margin-bottom:4px}
+.instr-sub-ans{display:flex;gap:4px;flex-wrap:wrap}
+@media(max-width:600px){.page{padding:12px}.met{grid-template-columns:1fr 1fr}.facts{grid-template-columns:1fr 1fr}.score-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -165,7 +178,7 @@ body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);m
       <button class="role-tab" id="tabLeader" onclick="setRole('leader')">Group Leader</button>
       <button class="role-tab" id="tabInstructor" onclick="setRole('instructor')">Instructor</button>
     </div>
-    <div id="studentFields">
+    <div class="studentFields" id="studentFields">
       <div class="fg"><label>Full Name</label><input type="text" id="inpName" placeholder="e.g. Ahmed Al-Mansouri"></div>
       <div class="fg"><label>Student ID</label><input type="text" id="inpID" placeholder="e.g. 20220001"></div>
       <div class="fg"><label>Group</label>
@@ -176,7 +189,7 @@ body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);m
         </select>
       </div>
     </div>
-    <div id="instructorFields" class="instr-pw" style="display:none">
+    <div class="instructorFields" id="instructorFields">
       <div class="fg"><label>Instructor Name</label><input type="text" id="inpInstrName" placeholder="Dr. Fekri Dureab"></div>
       <div class="fg"><label>Password</label><input type="password" id="inpPW" placeholder="Enter instructor password"></div>
       <div class="warn-box" style="margin-bottom:0;font-size:11px">Default password: <strong>UDST2026</strong> — change this before using with students.</div>
@@ -261,8 +274,7 @@ body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);m
         <thead><tr>
           <th>ID</th><th>ASHRM Domain</th><th>Risk Name</th>
           <th>L</th><th>C</th><th>RPN</th><th>Level</th>
-          <th>Mitigation</th>
-          <th>Res.L</th><th>Res.C</th><th>Res.RPN</th>
+          <th>Mitigation</th><th>Res.L</th><th>Res.C</th><th>Res.RPN</th>
           <th>Status</th><th>Owner</th><th>Action</th>
         </tr></thead>
         <tbody id="rrBody"></tbody>
@@ -294,9 +306,20 @@ body{font-family:'Inter',Arial,sans-serif;background:var(--sf);color:var(--tx);m
         <button class="btn btn-o" onclick="openRound(5)" style="font-size:12px">Round 5</button>
       </div>
     </div>
+
     <div class="instr-section">
-      <h3>Group Status — Round <span id="instrRoundStat">1</span></h3>
-      <div id="instrGroupData"></div>
+      <h3>Answer Key — Round <span id="instrAnsRound">1</span></h3>
+      <div id="instrAnsKey"></div>
+    </div>
+
+    <div class="instr-section">
+      <h3>All Groups & Submissions — Round <span id="instrSubRound">1</span></h3>
+      <div id="instrAllSubs"></div>
+    </div>
+
+    <div class="instr-section">
+      <h3>Group Decisions & Scores — Round <span id="instrGdRound">1</span></h3>
+      <div id="instrAllGD"></div>
     </div>
   </div>
 </div>
@@ -312,25 +335,351 @@ var ROUNDS={1:{title:"Round 1 — Risk Identification",questions:[
 {q:"Risk identification tool?",opts:{A:"Register + SWOT",B:"RCA",C:"FMEA",D:"Risk Matrix"},pts:{A:10,B:4,C:7,D:4},ans:'A'},
 {q:"Stock level action?",opts:{A:"Immediate physical audit",B:"Estimate",C:"Trust supplier",D:"Wait"},pts:{A:10,B:4,C:4,D:-5},ans:'A'}
 ]}};
-var DEFAULT_RR=[{id:'OR-1',domain:'Operational',name:'Single Supplier Dependency',L:5,C:5,mit:'Multi-supplier',RL:2,RC:3,status:'In Progress',owner:'CPO'}];
+var DEFAULT_RR=[{id:'OR-1',domain:'Operational',name:'Single Supplier Dependency',L:5,C:5,mit:'Activate multi-supplier strategy',RL:2,RC:3,status:'In Progress',owner:'CPO',isExample:true}];
+
 function saveLS(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 function loadLS(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
-function setRole(r){var tabs=document.querySelectorAll('.role-tab');tabs.forEach(t=>t.classList.remove('on'));event.target.classList.add('on');var sf=document.getElementById('studentFields'),inf=document.getElementById('instructorFields'),ln=document.getElementById('loginNote');if(r==='student'){sf.style.display='block';inf.style.display='none';ln.textContent='No account needed. Your answers save automatically.';}else{sf.style.display='none';inf.style.display='block';ln.textContent='Enter your name and the instructor password to access the control panel.';}}
-document.getElementById('enterBtn').addEventListener('click',function(){var name=document.getElementById('inpName').value.trim(),id=document.getElementById('inpID').value.trim(),group=document.getElementById('inpGroup').value,role=document.querySelector('.role-tab.on').id==='tabStudent'?'student':document.querySelector('.role-tab.on').id==='tabLeader'?'leader':'instructor';if(role==='instructor'){var pwd=document.getElementById('inpPW').value;if(pwd!==INSTRUCTOR_PASSWORD){document.getElementById('loginErr').style.display='block';return;}name=document.getElementById('inpInstrName').value.trim();}if(!name){alert('Please enter name.');return;}if(role!=='instructor'&&(!id||!group)){alert('Please fill all fields.');return;}user={name:name,id:id,group:group,role:role};saveLS('user_'+id,user);currentRound=loadLS('current_round',1);submitted=loadLS('submitted_'+id+'_r'+currentRound,false);myAnswers=loadLS('answers_'+id+'_r'+currentRound,{});rrRows=loadLS('rr_'+group,JSON.parse(JSON.stringify(DEFAULT_RR)));document.getElementById('loginView').style.display='none';document.getElementById('appView').style.display='block';document.getElementById('hdrUser').textContent=name+(group?' · '+group:'');document.getElementById('hdrRound').textContent='Round '+currentRound;if(role==='instructor'){document.getElementById('instrBadge').style.display='inline-block';document.getElementById('navInstr').style.display='block';}document.getElementById('rrGroupName').textContent=group||'Instructor';renderDecisions();renderGroup();renderRR();renderLB();setInterval(()=>{renderGroup();renderLB();},4000);});
-function showPage(id,tab){document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));document.getElementById(id).classList.add('on');if(tab)tab.classList.add('on');}
-function renderDecisions(){var rnd=ROUNDS[currentRound];if(!rnd){document.getElementById('decContent').innerHTML='<div class="empty"><h4>No active round</h4></div>';return;}if(submitted){var html='<div class="sub-ok"><h3>Your decisions are submitted!</h3><p>Go to Group Dashboard to see your group\'s answers.</p></div>';rnd.questions.forEach((q,i)=>{var qn='q'+(i+1),ans=myAnswers[qn]||'?',pts=(q.pts[ans]||0);html+='<div class="qcard" style="opacity:.8"><div class="qlabel">Q'+(i+1)+': <strong>'+ans+'</strong> <span class="pts '+(pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5')+'">'+(pts>0?'+':'')+pts+'</span></div></div>';});document.getElementById('decContent').innerHTML=html;return;}var html='<div class="stitle">'+rnd.title+'</div>';rnd.questions.forEach((q,i)=>{var qn='q'+(i+1),sel=myAnswers[qn]||'';html+='<div class="qcard"><div class="qlabel">DECISION '+(i+1)+' of 5</div><div class="qtext">'+q.q+'</div><div class="opts">';['A','B','C','D'].forEach(letter=>{var pts=q.pts[letter],ptsCls=pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5',isSel=sel===letter;html+='<div class="opt'+(isSel?' sel':'')+'" onclick="selectAnswer(\''+qn+'\',\''+letter+'\')"><div class="olet">'+letter+'</div><div style="flex:1">'+q.opts[letter]+'</div><span class="pts '+ptsCls+'">'+(pts>0?'+':'')+pts+'</span></div>';});html+='</div></div>';});var allAnswered=rnd.questions.every((_,i)=>myAnswers['q'+(i+1)]);html+='<div style="margin-top:14px"><button class="btn btn-p" onclick="submitDecisions()" '+(allAnswered?'':'disabled')+'>Submit my decisions</button></div>';document.getElementById('decContent').innerHTML=html;}
-function selectAnswer(qn,letter){if(submitted)return;myAnswers[qn]=letter;saveLS('answers_'+user.id+'_r'+currentRound,myAnswers);renderDecisions();}
-function submitDecisions(){var rnd=ROUNDS[currentRound],ok=rnd.questions.every((_,i)=>myAnswers['q'+(i+1)]);if(!ok){alert('Answer all 5 first.');return;}var subs=loadLS('subs_'+user.group+'_r'+currentRound,[]),ex=-1;subs.forEach((s,i)=>{if(s.id===user.id)ex=i;});var entry={id:user.id,name:user.name,group:user.group,answers:JSON.parse(JSON.stringify(myAnswers))};if(ex>=0)subs[ex]=entry;else subs.push(entry);saveLS('subs_'+user.group+'_r'+currentRound,subs);submitted=true;saveLS('submitted_'+user.id+'_r'+currentRound,true);renderDecisions();renderGroup();renderLB();}
-function renderGroup(){var subs=loadLS('subs_'+user.group+'_r'+currentRound,[]),gd=loadLS('gd_'+user.group+'_r'+currentRound,null),rnd=ROUNDS[currentRound];var pD=document.getElementById('phaseDot'),pT=document.getElementById('phaseText');if(gd){pD.className='dot dot-g';pT.textContent='Group decision submitted!';}else if(subs.length>0){pD.className='dot dot-a';pT.textContent=subs.length+' submitted — discuss then submit group decision';}else{pD.className='dot dot-r';pT.textContent='Waiting for members...';}var mgH='';if(subs.length===0){mgH='<div class="empty"><h4>No submissions yet</h4></div>';}else{subs.forEach(s=>{var ini=s.name.split(' ').map(w=>w[0]||'').join('').substring(0,2).toUpperCase();mgH+='<div class="mcard"><div class="mname"><div class="mavatar">'+ini+'</div>'+s.name+'</div><div class="mars">';for(var i=1;i<=5;i++){var a=s.answers['q'+i]||'';mgH+='<div class="mar"><span class="marq">Q'+i+'</span><span class="marv '+(a?'v'+a:'vn')+'">'+(a||'—')+'</span></div>';}mgH+='</div></div>';});}document.getElementById('memberGrid').innerHTML=mgH;document.getElementById('dqNum').textContent=viewingQ;if(rnd&&subs.length>0){var q=rnd.questions[viewingQ-1],counts={A:0,B:0,C:0,D:0};subs.forEach(s=>{var a=s.answers['q'+viewingQ];if(a)counts[a]++;});var tot=subs.length,dH='';['A','B','C','D'].forEach(letter=>{var pct=tot?(counts[letter]/tot*100|0):0,pts=q.pts[letter],ptsCls=pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5',barC=pts===10?'#1D9E75':pts===7?'#378ADD':pts>=4?'#EF9F27':'#E24B4A';dH+='<div class="dbar"><div class="dbar-top"><span><strong>'+letter+'</strong> '+counts[letter]+' ('+pct+'%)</span><span class="pts '+ptsCls+'">'+(pts>0?'+':'')+pts+'</span></div><div style="height:8px;background:var(--sf);border-radius:4px"><div style="height:100%;width:'+pct+'%;background:'+barC+'"></div></div></div>';});document.getElementById('distContent').innerHTML=dH;}var gdH='';if(gd){gdH='<div class="sub-ok"><h3>Submitted!</h3></div>';}else if(user.role==='leader'||user.role==='instructor'){gdH='<p style="font-size:12px;margin-bottom:12px">Select your group\'s final answer for each question after discussion.</p>';if(rnd){rnd.questions.forEach((q,i)=>{gdH+='<div class="gd-question"><div class="gd-qtitle">Decision '+(i+1)+': '+q.q+'</div><div class="gd-opts">';['A','B','C','D'].forEach(letter=>{var pts=q.pts[letter],ptsCls=pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5';gdH+='<div class="gd-opt"><input type="radio" id="gdq'+(i+1)+'_'+letter+'" name="gdq'+(i+1)+'" value="'+letter+'"><label for="gdq'+(i+1)+'_'+letter+'"><strong>'+letter+'</strong> <span class="pts '+ptsCls+'">'+(pts>0?'+':'')+pts+'</span></label></div>';});gdH+='</div></div>';});gdH+='<button class="btn btn-c" onclick="submitGD()" style="margin-top:12px">Submit group decision</button>';}}else{gdH='<div class="empty"><p>Only the Group Leader can submit the group decision.</p></div>';}document.getElementById('gdContent').innerHTML=gdH;}
+
+function setRole(r){
+  var tabs=document.querySelectorAll('.role-tab');
+  tabs.forEach(t=>t.classList.remove('on'));
+  event.target.classList.add('on');
+  var sf=document.getElementById('studentFields'),
+      inf=document.getElementById('instructorFields'),
+      ln=document.getElementById('loginNote');
+  if(r==='student'||r==='leader'){
+    sf.style.display='block';
+    inf.style.display='none';
+    ln.textContent='No account needed. Your answers save automatically.';
+  }else{
+    sf.style.display='none';
+    inf.style.display='block';
+    ln.textContent='Enter your name and the instructor password to access the control panel.';
+  }
+}
+
+document.getElementById('enterBtn').addEventListener('click',function(){
+  var name=document.getElementById('inpName').value.trim(),
+      id=document.getElementById('inpID').value.trim(),
+      group=document.getElementById('inpGroup').value,
+      role=document.querySelector('.role-tab.on').id;
+  
+  if(role==='tabInstructor'){
+    var pwd=document.getElementById('inpPW').value;
+    if(pwd!==INSTRUCTOR_PASSWORD){
+      document.getElementById('loginErr').style.display='block';
+      return;
+    }
+    name=document.getElementById('inpInstrName').value.trim();
+    role='instructor';
+  }else{
+    role=role==='tabStudent'?'student':'leader';
+  }
+  
+  if(!name){alert('Please enter name.');return;}
+  if(role!=='instructor'&&(!id||!group)){alert('Please fill all fields.');return;}
+  
+  user={name:name,id:id||'instructor',group:group||'',role:role};
+  saveLS('user_'+(id||'instr'),user);
+  
+  currentRound=loadLS('current_round',1);
+  submitted=loadLS('submitted_'+user.id+'_r'+currentRound,false);
+  myAnswers=loadLS('answers_'+user.id+'_r'+currentRound,{});
+  rrRows=loadLS('rr_'+user.group,JSON.parse(JSON.stringify(DEFAULT_RR)));
+  
+  document.getElementById('loginView').style.display='none';
+  document.getElementById('appView').style.display='block';
+  document.getElementById('appView').classList.add(role==='instructor'?'is-instructor':'');
+  
+  document.getElementById('hdrUser').textContent=name+(group?' · '+group:'');
+  document.getElementById('hdrRound').textContent='Round '+currentRound;
+  
+  if(role==='instructor'){
+    document.getElementById('instrBadge').style.display='inline-block';
+    document.getElementById('navInstr').style.display='block';
+    document.getElementById('navDec').style.display='none';
+    document.getElementById('navGrp').style.display='none';
+  }
+  
+  document.getElementById('rrGroupName').textContent=group||'Instructor';
+  renderDecisions();
+  renderGroup();
+  renderRR();
+  renderLB();
+  renderInstructor();
+  
+  setInterval(()=>{
+    renderGroup();
+    renderLB();
+    if(role==='instructor')renderInstructor();
+  },4000);
+});
+
+function showPage(id,tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  if(tab)tab.classList.add('on');
+}
+
+function renderDecisions(){
+  var rnd=ROUNDS[currentRound];
+  if(!rnd){
+    document.getElementById('decContent').innerHTML='<div class="empty"><h4>No active round</h4></div>';
+    return;
+  }
+  
+  if(submitted){
+    var html='<div class="sub-ok"><h3>Your decisions are submitted!</h3><p>Go to Group Dashboard to see your group\'s answers and final score.</p></div>';
+    rnd.questions.forEach((q,i)=>{
+      var qn='q'+(i+1),ans=myAnswers[qn]||'?',pts=(q.pts[ans]||0);
+      html+='<div class="qcard" style="opacity:.8"><div class="qlabel">Q'+(i+1)+': <strong>'+ans+'</strong></div></div>';
+    });
+    document.getElementById('decContent').innerHTML=html;
+    return;
+  }
+  
+  var html='<div class="stitle">'+rnd.title+'</div>';
+  rnd.questions.forEach((q,i)=>{
+    var qn='q'+(i+1),sel=myAnswers[qn]||'';
+    html+='<div class="qcard"><div class="qlabel">DECISION '+(i+1)+' of 5</div><div class="qtext">'+q.q+'</div><div class="opts">';
+    ['A','B','C','D'].forEach(letter=>{
+      var pts=q.pts[letter],ptsCls=pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5',isSel=sel===letter;
+      html+='<div class="opt'+(isSel?' sel':'')+'" onclick="selectAnswer(\''+qn+'\',\''+letter+'\')"><div class="olet">'+letter+'</div><div style="flex:1">'+q.opts[letter]+'</div><span class="pts '+ptsCls+'">'+(pts>0?'+':'')+pts+'</span></div>';
+    });
+    html+='</div></div>';
+  });
+  var allAnswered=rnd.questions.every((_,i)=>myAnswers['q'+(i+1)]);
+  html+='<div style="margin-top:14px"><button class="btn btn-p" onclick="submitDecisions()" '+(allAnswered?'':'disabled')+'>Submit my decisions</button></div>';
+  document.getElementById('decContent').innerHTML=html;
+}
+
+function selectAnswer(qn,letter){
+  if(submitted)return;
+  myAnswers[qn]=letter;
+  saveLS('answers_'+user.id+'_r'+currentRound,myAnswers);
+  renderDecisions();
+}
+
+function submitDecisions(){
+  var rnd=ROUNDS[currentRound],ok=rnd.questions.every((_,i)=>myAnswers['q'+(i+1)]);
+  if(!ok){alert('Answer all 5 first.');return;}
+  var subs=loadLS('subs_'+user.group+'_r'+currentRound,[]),ex=-1;
+  subs.forEach((s,i)=>{if(s.id===user.id)ex=i;});
+  var entry={id:user.id,name:user.name,group:user.group,answers:JSON.parse(JSON.stringify(myAnswers))};
+  if(ex>=0)subs[ex]=entry;else subs.push(entry);
+  saveLS('subs_'+user.group+'_r'+currentRound,subs);
+  submitted=true;
+  saveLS('submitted_'+user.id+'_r'+currentRound,true);
+  renderDecisions();
+  renderGroup();
+  renderLB();
+}
+
+function renderGroup(){
+  var subs=loadLS('subs_'+user.group+'_r'+currentRound,[]),gd=loadLS('gd_'+user.group+'_r'+currentRound,null),rnd=ROUNDS[currentRound];
+  var pD=document.getElementById('phaseDot'),pT=document.getElementById('phaseText');
+  if(gd){pD.className='dot dot-g';pT.textContent='Group decision submitted! ✓';}
+  else if(subs.length>0){pD.className='dot dot-a';pT.textContent=subs.length+' submitted — discuss then submit group decision';}
+  else{pD.className='dot dot-r';pT.textContent='Waiting for members...';}
+  
+  var mgH='';
+  if(subs.length===0){mgH='<div class="empty"><h4>No submissions yet</h4></div>';}
+  else{
+    subs.forEach(s=>{
+      var ini=s.name.split(' ').map(w=>w[0]||'').join('').substring(0,2).toUpperCase();
+      mgH+='<div class="mcard"><div class="mname"><div class="mavatar">'+ini+'</div>'+s.name+'</div><div class="mars">';
+      for(var i=1;i<=5;i++){
+        var a=s.answers['q'+i]||'';
+        mgH+='<div class="mar"><span class="marq">Q'+i+'</span><span class="marv '+(a?'v'+a:'vn')+'">'+(a||'—')+'</span></div>';
+      }
+      mgH+='</div></div>';
+    });
+  }
+  document.getElementById('memberGrid').innerHTML=mgH;
+  document.getElementById('dqNum').textContent=viewingQ;
+  
+  if(rnd&&subs.length>0){
+    var q=rnd.questions[viewingQ-1],counts={A:0,B:0,C:0,D:0};
+    subs.forEach(s=>{var a=s.answers['q'+viewingQ];if(a)counts[a]++;});
+    var tot=subs.length,dH='';
+    ['A','B','C','D'].forEach(letter=>{
+      var pct=tot?(counts[letter]/tot*100|0):0,pts=q.pts[letter],ptsCls=pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5',barC=pts===10?'#1D9E75':pts===7?'#378ADD':pts>=4?'#EF9F27':'#E24B4A';
+      dH+='<div class="dbar"><div class="dbar-top"><span><strong>'+letter+'</strong> '+counts[letter]+' ('+pct+'%)</span><span class="pts '+ptsCls+'">'+(pts>0?'+':'')+pts+'</span></div><div style="height:8px;background:var(--sf);border-radius:4px"><div style="height:100%;width:'+pct+'%;background:'+barC+'"></div></div></div>';
+    });
+    document.getElementById('distContent').innerHTML=dH;
+  }
+  
+  var gdH='';
+  if(gd){
+    var sc=gd.score||0;
+    gdH='<div class="sub-ok"><h3>Group Decision Submitted! ✓</h3><p style="margin-bottom:12px">Final Group Score: <strong style="font-size:18px;color:#1A7A4A">'+sc+' pts</strong></p></div>';
+    
+    gdH+='<div class="stitle" style="margin:16px 0 12px 0">Individual scores:</div>';
+    if(subs.length>0){
+      gdH+='<div class="score-grid">';
+      subs.forEach(s=>{
+        var pts=0;
+        for(var i=1;i<=5;i++){var a=s.answers['q'+i];if(a)pts+=(rnd.questions[i-1].pts[a]||0);}
+        gdH+='<div class="score-card"><h4>'+s.name+'</h4><div class="score-val">'+pts+'</div><div class="score-detail">Decisions: '+pts+' pts</div></div>';
+      });
+      gdH+='</div>';
+    }
+  }else if(user.role==='leader'||user.role==='instructor'){
+    gdH='<p style="font-size:12px;margin-bottom:12px">Select your group\'s final answer for each question after discussion.</p>';
+    if(rnd){
+      rnd.questions.forEach((q,i)=>{
+        var fname='gdq'+currentRound+'_'+(i+1);
+        gdH+='<div class="gd-question"><div class="gd-qtitle">Decision '+(i+1)+': '+q.q+'</div><div class="gd-opts">';
+        ['A','B','C','D'].forEach(letter=>{
+          var pts=q.pts[letter],ptsCls=pts===10?'p10':pts===7?'p7':pts===4?'p4':pts===0?'p0':'pm5';
+          gdH+='<div class="gd-opt"><input type="radio" id="'+fname+'_'+letter+'" name="'+fname+'" value="'+letter+'"><label for="'+fname+'_'+letter+'"><strong>'+letter+'</strong></label></div>';
+        });
+        gdH+='</div></div>';
+      });
+      gdH+='<button class="btn btn-c" onclick="submitGD()" style="margin-top:12px">Submit group decision</button>';
+    }
+  }else{
+    gdH='<div class="empty"><p>Only the Group Leader can submit the group decision.</p></div>';
+  }
+  document.getElementById('gdContent').innerHTML=gdH;
+}
+
 function prevQ(){if(viewingQ>1){viewingQ--;renderGroup();}}
 function nextQ(){if(viewingQ<5){viewingQ++;renderGroup();}}
-function submitGD(){var rnd=ROUNDS[currentRound],ans={},ok=true;for(var i=1;i<=5;i++){var sel=document.querySelector('input[name="gdq'+i+'"]:checked');if(!sel){ok=false;break;}ans['q'+i]=sel.value;}if(!ok){alert('Select all 5 answers.');return;}var sc=rnd.questions.reduce((sum,q,i)=>sum+(q.pts[ans['q'+(i+1)]]||0),0),gd={group:user.group,round:currentRound,answers:ans,score:sc};saveLS('gd_'+user.group+'_r'+currentRound,gd);renderGroup();renderLB();}
-function renderRR(){var ext=rrRows.filter(r=>r.L*r.C>=15).length,mit=rrRows.filter(r=>r.RL*r.RC<r.L*r.C).length;document.getElementById('rrMetrics').innerHTML='<div class="metc"><div class="metn">'+rrRows.length+'</div><div class="metl">Total</div></div><div class="metc mred"><div class="metn">'+ext+'</div><div class="metl">Extreme</div></div><div class="metc mgrn"><div class="metn">'+mit+'</div><div class="metl">Reduced</div></div>';var DOMS=['Operational','Clinical','Financial','Legal/Regulatory','Human Capital'];var tbH='';rrRows.forEach((r,i)=>{var rpn=r.L*r.C,res=r.RL*r.RC,lvC=rpn>=15?'lext':rpn>=10?'lhi':rpn>=5?'lmed':'llow',lvL=rpn>=15?'EXT':rpn>=10?'HI':rpn>=5?'MED':'LOW';if(editingIdx===i){tbH+='<tr style="background:#EBF2FB"><td><input class="rinput" value="'+r.id+'" style="width:44px"></td><td><select class="rinput">'+DOMS.map(d=>'<option'+(d===r.domain?' selected':'')+'>'+d+'</option>').join('')+'</select></td><td><input class="rinput" value="'+r.name+'" style="min-width:90px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.L+'" style="width:32px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.C+'" style="width:32px"></td><td style="font-weight:600">'+rpn+'</td><td><span class="'+lvC+'">'+lvL+'</span></td><td><input class="rinput" value="'+r.mit+'" style="min-width:100px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.RL+'" style="width:32px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.RC+'" style="width:32px"></td><td><span class="'+lvC+'">'+getLvl(res)+'</span></td><td><input class="rinput" value="'+r.status+'" style="min-width:80px"></td><td><input class="rinput" value="'+r.owner+'" style="min-width:70px"></td><td><button class="btn btn-c" onclick="editingIdx=null;renderRR()" style="font-size:10px;padding:4px 8px">Save</button></td></tr>';}else{tbH+='<tr><td style="font-family:monospace;font-size:10px;font-weight:600">'+r.id+'</td><td style="font-size:10px">'+r.domain+'</td><td style="font-weight:600;font-size:11px">'+r.name+'</td><td style="text-align:center">'+r.L+'</td><td style="text-align:center">'+r.C+'</td><td style="text-align:center;font-weight:600">'+rpn+'</td><td><span class="'+lvC+'">'+lvL+'</span></td><td style="font-size:10px">'+r.mit+'</td><td style="text-align:center">'+r.RL+'</td><td style="text-align:center">'+r.RC+'</td><td><span class="'+lvC+'">'+getLvl(res)+'</span></td><td style="font-size:10px">'+r.status+'</td><td style="font-size:10px">'+r.owner+'</td><td><button class="btn btn-o" onclick="editingIdx='+i+';renderRR()" style="font-size:10px;padding:4px 8px">Edit</button></td></tr>';}});document.getElementById('rrBody').innerHTML=tbH;}
+
+function submitGD(){
+  var rnd=ROUNDS[currentRound],ans={},ok=true,fname;
+  for(var i=1;i<=5;i++){
+    fname='gdq'+currentRound+'_'+i;
+    var sel=document.querySelector('input[name="'+fname+'"]:checked');
+    if(!sel){ok=false;break;}
+    ans['q'+i]=sel.value;
+  }
+  if(!ok){alert('Select all 5 answers.');return;}
+  var sc=rnd.questions.reduce((sum,q,i)=>sum+(q.pts[ans['q'+(i+1)]]||0),0),gd={group:user.group,round:currentRound,answers:ans,score:sc};
+  saveLS('gd_'+user.group+'_r'+currentRound,gd);
+  renderGroup();
+  renderLB();
+}
+
+function renderRR(){
+  var ext=rrRows.filter(r=>!r.isExample&&r.L*r.C>=15).length,mit=rrRows.filter(r=>!r.isExample&&r.RL*r.RC<r.L*r.C).length;
+  document.getElementById('rrMetrics').innerHTML='<div class="metc"><div class="metn">'+(rrRows.length-1)+'</div><div class="metl">Identified</div></div><div class="metc mred"><div class="metn">'+ext+'</div><div class="metl">Extreme</div></div><div class="metc mgrn"><div class="metn">'+mit+'</div><div class="metl">Mitigated</div></div>';
+  
+  var DOMS=['Operational','Clinical','Financial','Legal/Regulatory','Human Capital'];
+  var tbH='';
+  rrRows.forEach((r,i)=>{
+    var rpn=r.L*r.C,res=r.RL*r.RC,lvC=rpn>=15?'lext':rpn>=10?'lhi':rpn>=5?'lmed':'llow',lvL=rpn>=15?'EXT':rpn>=10?'HI':rpn>=5?'MED':'LOW';
+    var rowClass=r.isExample?'example-row':'';
+    if(editingIdx===i){
+      tbH+='<tr class="'+rowClass+'" style="background:#EBF2FB"><td><input class="rinput" value="'+r.id+'" style="width:44px"></td><td><select class="rinput">'+DOMS.map(d=>'<option'+(d===r.domain?' selected':'')+'>'+d+'</option>').join('')+'</select></td><td><input class="rinput" value="'+r.name+'" style="min-width:90px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.L+'" style="width:32px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.C+'" style="width:32px"></td><td style="font-weight:600">'+rpn+'</td><td><span class="'+lvC+'">'+lvL+'</span></td><td><input class="rinput" value="'+r.mit+'" style="min-width:100px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.RL+'" style="width:32px"></td><td><input class="rinput" type="number" min="1" max="5" value="'+r.RC+'" style="width:32px"></td><td><span class="'+lvC+'">'+getLvl(res)+'</span></td><td><input class="rinput" value="'+r.status+'" style="min-width:80px"></td><td><input class="rinput" value="'+r.owner+'" style="min-width:70px"></td><td><button class="btn btn-c" onclick="editingIdx=null;renderRR()" style="font-size:10px;padding:4px 8px">Save</button></td></tr>';
+    }else{
+      tbH+='<tr class="'+rowClass+'"><td style="font-family:monospace;font-size:10px;font-weight:600">'+r.id+'</td><td style="font-size:10px">'+r.domain+'</td><td style="font-weight:600;font-size:11px">'+r.name+'</td><td style="text-align:center">'+r.L+'</td><td style="text-align:center">'+r.C+'</td><td style="text-align:center;font-weight:600">'+rpn+'</td><td><span class="'+lvC+'">'+lvL+'</span></td><td style="font-size:10px">'+r.mit+'</td><td style="text-align:center">'+r.RL+'</td><td style="text-align:center">'+r.RC+'</td><td><span class="'+lvC+'">'+getLvl(res)+'</span></td><td style="font-size:10px">'+r.status+'</td><td style="font-size:10px">'+r.owner+'</td><td><button class="btn '+(r.isExample?'btn-o':'')+'" onclick="editingIdx='+i+';renderRR()" style="font-size:10px;padding:4px 8px">'+(r.isExample?'View':'Edit')+'</button></td></tr>';
+    }
+  });
+  document.getElementById('rrBody').innerHTML=tbH;
+}
+
 function getLvl(rpn){return rpn>=15?'EXT':rpn>=10?'HI':rpn>=5?'MED':'LOW';}
-function addRRRow(){rrRows.push({id:'R-'+(rrRows.length+1),domain:'Operational',name:'New risk',L:3,C:3,mit:'Action',RL:2,RC:2,status:'Open',owner:''});editingIdx=rrRows.length-1;renderRR();}
+function addRRRow(){rrRows.push({id:'R-'+(rrRows.length),domain:'Operational',name:'New risk',L:3,C:3,mit:'Action',RL:2,RC:2,status:'Open',owner:'',isExample:false});editingIdx=rrRows.length-1;renderRR();}
 function saveRR(){saveLS('rr_'+user.group,rrRows);var btn=document.getElementById('saveRRBtn');btn.textContent='Saved! ✓';setTimeout(()=>{btn.textContent='Save register';},2000);}
-function renderLB(){var allGD=loadLS('allGD',[]),GROUPS=['Group A','Group B','Group C','Group D','Group E','Group F'],scores={};GROUPS.forEach(g=>{scores[g]={dec:0,rr:0,tot:0};});allGD.forEach(gd=>{if(gd.round===currentRound&&scores[gd.group])scores[gd.group].dec=gd.score||0;});Object.values(rrRows).forEach(r=>{if(scores[user.group])scores[user.group].rr=Math.min(10,rrRows.filter(r=>r.mit&&r.mit.length>5).length*2);});Object.values(scores).forEach(s=>{s.tot=s.dec+s.rr;});var sorted=Object.entries(scores).filter(e=>e[1].dec>0).sort((a,b)=>b[1].tot-a[1].tot),maxS=sorted.length>0?sorted[0][1].tot:50;document.getElementById('lbMetrics').innerHTML='<div class="metc"><div class="metn">'+sorted.length+'</div><div class="metl">Groups</div></div><div class="metc"><div class="metn">'+currentRound+'</div><div class="metl">Round</div></div><div class="metc mgrn"><div class="metn">'+(sorted.length?sorted[0][1].tot:0)+'</div><div class="metl">Top</div></div>';var lbH='';if(sorted.length===0)lbH='<div class="empty"><h4>No submissions yet</h4></div>';else sorted.forEach((e,i)=>{var name=e[0],s=e[1],rCls=i===0?'r1':i===1?'r2':i===2?'r3':'',pct=maxS?(s.tot/maxS*100|0):0;lbH+='<div class="lbrow"><div class="lbrank '+rCls+'">'+(i+1)+'</div><div style="flex:1"><div class="lbname">'+name+'</div><div class="lbsub">Decisions: '+s.dec+' · Register: +'+s.rr+'</div></div><div style="display:flex;align-items:center;gap:10px"><div class="lbbar"><div class="lbfill" style="width:'+pct+'%"></div></div><div class="lbtot">'+s.tot+'</div></div></div>';});document.getElementById('lbList').innerHTML=lbH;}
-function openRound(n){currentRound=n;saveLS('current_round',n);document.getElementById('hdrRound').textContent='Round '+n;document.getElementById('instrRoundDisplay').textContent=n;document.getElementById('instrRoundStat').textContent=n;submitted=false;myAnswers={};renderDecisions();renderGroup();}
+
+function renderLB(){
+  var GROUPS=['Group A','Group B','Group C','Group D','Group E','Group F'],scores={};
+  GROUPS.forEach(g=>{scores[g]={dec:0,rr:0,tot:0};});
+  
+  GROUPS.forEach(g=>{
+    var gd=loadLS('gd_'+g+'_r'+currentRound,null);
+    if(gd)scores[g].dec=gd.score||0;
+  });
+  
+  if(user.group)scores[user.group].rr=Math.min(10,(rrRows.length-1)*2);
+  
+  Object.values(scores).forEach(s=>{s.tot=s.dec+s.rr;});
+  var sorted=Object.entries(scores).filter(e=>e[1].dec>0).sort((a,b)=>b[1].tot-a[1].tot),maxS=sorted.length>0?sorted[0][1].tot:50;
+  document.getElementById('lbMetrics').innerHTML='<div class="metc"><div class="metn">'+sorted.length+'</div><div class="metl">Groups</div></div><div class="metc"><div class="metn">'+currentRound+'</div><div class="metl">Round</div></div><div class="metc mgrn"><div class="metn">'+(sorted.length?sorted[0][1].tot:0)+'</div><div class="metl">Top</div></div>';
+  
+  var lbH='';
+  if(sorted.length===0)lbH='<div class="empty"><h4>No submissions yet</h4></div>';
+  else sorted.forEach((e,i)=>{
+    var name=e[0],s=e[1],rCls=i===0?'r1':i===1?'r2':i===2?'r3':'',pct=maxS?(s.tot/maxS*100|0):0;
+    lbH+='<div class="lbrow"><div class="lbrank '+rCls+'">'+(i+1)+'</div><div style="flex:1"><div class="lbname">'+name+'</div><div class="lbsub">Decisions: '+s.dec+' · Register: +'+s.rr+'</div></div><div style="display:flex;align-items:center;gap:10px"><div class="lbbar"><div class="lbfill" style="width:'+pct+'%"></div></div><div class="lbtot">'+s.tot+'</div></div></div>';
+  });
+  document.getElementById('lbList').innerHTML=lbH;
+}
+
+function renderInstructor(){
+  var rnd=ROUNDS[currentRound];
+  if(!rnd)return;
+  
+  document.getElementById('instrRoundDisplay').textContent=currentRound;
+  document.getElementById('instrAnsRound').textContent=currentRound;
+  document.getElementById('instrSubRound').textContent=currentRound;
+  document.getElementById('instrGdRound').textContent=currentRound;
+  
+  var ansH='';
+  rnd.questions.forEach((q,i)=>{
+    ansH+='<div class="anskey"><div class="anskey-q">Question '+(i+1)+': '+q.q+'</div><div class="anskey-opts">';
+    ['A','B','C','D'].forEach(letter=>{
+      var pts=q.pts[letter],isCor=letter===q.ans;
+      ansH+='<div class="anskey-opt'+(isCor?' correct':'')+'">'+(isCor?'✓ ':'')+''+letter+' ('+q.opts[letter]+') <strong>'+(pts>0?'+':'')+pts+'</strong></div>';
+    });
+    ansH+='</div></div>';
+  });
+  document.getElementById('instrAnsKey').innerHTML=ansH;
+  
+  var GROUPS=['Group A','Group B','Group C','Group D','Group E','Group F'];
+  var subsH='';
+  GROUPS.forEach(g=>{
+    var subs=loadLS('subs_'+g+'_r'+currentRound,[]);
+    if(subs.length>0){
+      subsH+='<div class="card"><div class="card-h"><h3>'+g+' <span style="font-size:10px;color:var(--mu)">'+subs.length+' submitted</span></h3></div><div class="card-b">';
+      subsH+='<div class="instr-sub-list">';
+      subs.forEach(s=>{
+        var pts=0;
+        subsH+='<div class="instr-sub-member"><div class="instr-sub-name">'+s.name+' (ID: '+s.id+')</div><div class="instr-sub-ans">';
+        for(var i=1;i<=5;i++){
+          var a=s.answers['q'+i],p=rnd.questions[i-1].pts[a]||0;
+          pts+=p;
+          var isCor=a===rnd.questions[i-1].ans;
+          subsH+='<div class="instr-answer-item" style="background:'+(isCor?'#E1F5EE':'#FCEBEB')+';color:'+(isCor?'#1A7A4A':'#C0392B')+'">Q'+i+': <strong>'+a+'</strong> '+(p>0?'+':'')+p+'</div>';
+        }
+        subsH+='</div><div style="margin-top:6px;font-size:11px;color:var(--mu)"><strong>Total: '+pts+' pts</strong></div></div>';
+      });
+      subsH+='</div></div></div>';
+    }
+  });
+  document.getElementById('instrAllSubs').innerHTML=subsH||'<div class="empty"><p>No submissions yet</p></div>';
+  
+  var gdH='';
+  GROUPS.forEach(g=>{
+    var gd=loadLS('gd_'+g+'_r'+currentRound,null);
+    if(gd){
+      gdH+='<div class="card"><div class="card-h"><h3>'+g+' — Score: <strong style="color:var(--cy)">'+gd.score+' pts</strong></h3></div><div class="card-b">';
+      gdH+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px">';
+      for(var i=1;i<=5;i++){
+        var a=gd.answers['q'+i],pts=rnd.questions[i-1].pts[a]||0,isCor=a===rnd.questions[i-1].ans;
+        gdH+='<div style="background:'+(isCor?'#E1F5EE':'#FCEBEB')+';padding:8px;border-radius:6px;font-size:11px;color:'+(isCor?'#1A7A4A':'#C0392B')+'"><strong>Q'+i+': '+a+'</strong><br>('+rnd.questions[i-1].opts[a]+') <strong style="font-size:12px">'+(pts>0?'+':'')+pts+'</strong></div>';
+      }
+      gdH+='</div></div></div>';
+    }
+  });
+  document.getElementById('instrAllGD').innerHTML=gdH||'<div class="empty"><p>No group decisions yet</p></div>';
+}
+
+function openRound(n){
+  currentRound=n;
+  saveLS('current_round',n);
+  document.getElementById('hdrRound').textContent='Round '+n;
+  submitted=false;
+  myAnswers={};
+  renderDecisions();
+  renderGroup();
+  renderRR();
+  renderLB();
+  renderInstructor();
+}
 </script>
 </body>
 </html>
